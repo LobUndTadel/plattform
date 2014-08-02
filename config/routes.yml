@@ -1,0 +1,11 @@
+
+routes:
+	# user api
+    user:
+        GET login:
+            authorized: false
+            to: User.showLogin
+        XXX login:
+            authorized: false
+            to: User.login
+        POST logout: User.logout
