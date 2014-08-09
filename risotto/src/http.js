@@ -1,11 +1,13 @@
 var koala = require('koala');
 var router = require('koa-router');
 var serve = require('koa-static');
+var less = require('koa-less');
 var session = require('koa-generic-session');
 var RedisStore = require('koa-redis');
 var redis = require('redis');
 var _ = require('underscore');
 var Params = require('./params');
+var pathJoin = require('path').join;
 
 
 /**
@@ -146,6 +148,13 @@ function Http(Risotto){
 		
 	server.use(session({
   		store: redisStore
+	}));
+
+	// less
+	server.use(less(Risotto.APP + 'public', {
+		parser : {
+			paths : [pathJoin(Risotto.APP, '..', 'node_modules')]
+		}
 	}));
 
 	// static serving

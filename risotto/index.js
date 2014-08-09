@@ -77,6 +77,9 @@ Risotto.initialize = co(function*( base ){
 	//bind routes
 	this.httpServer.bind(this.routes);
 
+	//build
+	yield startup.build(this);
+
 	process.on('uncaughtException', this.onerror.bind(this));
 
 	//ready to go

@@ -1,15 +1,26 @@
-var fs = require('fs'),
-	_ = require('underscore'),
-	Controller = require('./controller'),
-	yaml = require('js-yaml'),
-	fs   = require('fs'),
-	thunkify = require('thunkify'),
-	readFile = thunkify(fs.readFile),
-	exists = function(path){
-		return function(fn){
-			fs.exists(path, function(a){fn(!a)});
-		}
-	};
+var fs = require('fs');
+var _ = require('underscore');
+var	Controller = require('./controller');
+var	yaml = require('js-yaml');
+var	fs   = require('fs');
+var	thunkify = require('thunkify');
+var	readFile = thunkify(fs.readFile);
+var exec = require('co-exec');
+
+
+function escapeshell( s ) {
+	return s.replace(/(["\s'$`\\])/g,'\\$1').replace(/&/g,'\\&');
+};
+
+/**
+ * thunkified version of fs.exists
+ */
+
+function exists(path){
+	return function(fn){
+		fs.exists(path, function(a){fn(!a)});
+	}
+};
 
 /**
  * replaces .js
@@ -225,4 +236,10 @@ exports.loadHooks = function( app ){
 	} catch(err){
 		app.logger.warn('Hook "' + hooks[hook].name + '" failed with: ' + err);
 	}
+};
+
+exports.build = function*(app){
+	var p = escapeshell(app.APP + 'public/assets/js/');
+	yield exec("browserify -e "+p+"index.js -t reactify -o "+p+"bundle.dev.js -d");
+   // "browserify -e app/bootstrap.js -t reactify -t uglifyify -o public/scripts/bundle.min.js"
 };
