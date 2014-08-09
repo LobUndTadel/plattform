@@ -30,7 +30,7 @@ _.extend(proto, {
     
     authorize : function(data){
         this.koaContext.session = {
-            authorized : true;
+            authorized : true
         }
     },
 
