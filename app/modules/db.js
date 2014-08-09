@@ -1,7 +1,7 @@
-exports.initialize = function( time ){
+exports.initialize = function( app ){
   return function(fn){
   	setTimeout(function(){
   		fn(null);;
-  	}, time);
+  	}, 100);
   }	
 };

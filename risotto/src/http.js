@@ -1,85 +1,156 @@
-var koala = require('koala'),
-	engine = require('ejs-locals'),
-	/*RedisStore = require('connect-redis')(express),*/
-	_ = require('underscore'),
-	Promise = require('bluebird'),
-	Params = require('./params');
+var koala = require('koala');
+var router = require('koa-router');
+var serve = require('koa-static');
+var session = require('koa-generic-session');
+var RedisStore = require('koa-redis');
+var redis = require('redis');
+var _ = require('underscore');
+var Params = require('./params');
 
-var routeDefaults = {
-	via : 'get',
-	authorized : true
+
+/**
+ * Expose http.
+ * @param {RisottoSingleton} Risotto
+ * @api public
+ */
+
+module.exports = function(Risotto){
+	return new Http(Risotto);	
 };
 
+/**
+ * Middleware to validate route constraints.
+ * @param {Route} route
+ * @param {RisottoSingleton} risotto
+ * @api private
+ */
 
-function validateConstraints(route){
-	return function validateConstraintsClosure(req, res, next){
-		
-		//check if the route should be authorized
+function rissottoMiddleware(route, Risotto){
+	return function* rissottoMiddlewareClosure(next){
 		if( route.authorized ){
-			
-			if( !req.session.authorized ){
-				res.status(401);
-
- 				var formatJson = req.params.format && req.params.format === 'json',
-            		headerJson = req.is('application/json');
-
-				// we redirect if its html 			
-				if( !(formatJson || headerJson) ){
-					res.redirect(Yolo.config.http.notAuthorizedRedirect);
-				} else {
-					res.end();
-				}
-				
+			if( !this.session.authorized ){
+				this.response.status = 401;
+				yield Risotto.application.onAuthorizationError(this, next);
 				return;
 			}
-		} 
-
-
-		next();
+		}
 	}
 };
 
-function initializers(req, res, next){
-	req.data = {};
-	Yolo.initializersBefore("controllers", req, res, next);
+/**
+ * Calls the hooks in context and
+ * expose the result via `middlewareData`.
+ * @param {Generator} next
+ * @api private
+ */
+
+function* hooksMiddleware(next){
+	var data = yield Risotto.callHooks('before', 'controller', this, next);
+	this.middlewareData = data;
+	yield next;
 };
+
+/**
+ * Calls the actual controller specified in `route`.
+ * @param {Object} route
+ * @api private
+ */
 
 function callRoute(route){
 	var fn = route.to.split('.');
 	
-	return function callRouteClosure(req, res){
-
+	return function* callRouteClosure(next){
 		//lockup controller by name defined into the route and initialize 
-		var controller = Yolo.controllers[fn[0]];
+		var controller = Risotto.controllers[fn[0]];
 		var instance = new controller();
 
 		//merge all into one params object
 		var params = new Params();
-			params.set( _.extend({}, req.params, req.query, req.body, req.files));
+			params.set( _.extend({}, this.req.params, this.req.query, this.req.body, this.req.files));
 		
-		_.extend( instance, req.data);
-		delete(req.data);
+		_.extend( instance, this.middlewareData);
+		delete this.middlewareData;
 
-		if(Yolo.devMode){
-			Yolo.logger.log(fn[0] + "#" + fn[1] );
-			Yolo.logger.log(JSON.stringify(params));
+		if(Risotto.devMode){
+			Risotto.logger.log(fn[0] + "#" + fn[1] + '(…)' + JSON.stringify(params));
 		}
 
 		//make these in the controller available
-		instance.request = req;
-		instance.response = res;
+		instance.koaContext = this;
 
-		instance[fn[1]](params);		
+		yield instance[fn[1]](params);		
 
-		req.on("end", function(){
-			//free memory
-			delete instance;
-		})
+		delete instance;
 	};
 };
 
-var Http = function( Risotto ){
+/**
+ * Handler for generic errors.
+ * @param {Generator} next
+ * @api private
+ */
+
+function* errorHandler(next){
+	try {
+  		yield next;
+  		if (404 == this.response.status && !this.response.body) this.throw(404);
+	} catch (err) {
+  		var status = err.status || 500;
+
+  		if(404 == status){
+  			yield Risotto.application.onNotFoundError(this, next);
+  		} else {
+  			yield Risotto.application.onError(this, next);
+  		}
+  	}
+}
+
+/**
+ * Returns a route name for `route`.
+ * @param route {Object}
+ * @api private
+ */
+function namedRouteFor(route){
+	return route.to.replace(/(\/|\.)/g,'_').toLowerCase();
+}
+
+/**
+ * The Http Constructor
+ * @param {RisottoSingleton} Risotto
+ * @api public
+ */
+
+function Http(Risotto){
 	var server = koala();
+
+	// mount the router
+	server.use(router(server));
+
+	// reset error handler
+	server.errorHandler = errorHandler;
+
+	// setup session
+	var redisClient = redis.createClient( 
+		Risotto.config.redis.port || 6379, 
+		Risotto.config.redis.host || '127.0.0.1',
+		Risotto.config.redis.config || {}
+	);
+
+	var redisStore = new RedisStore({
+  		client : redisClient
+  	});
+
+	redisClient.on('error', function(err){
+		Risotto.exit('Failed with ' + err);
+	});
+		
+	server.use(session({
+  		store: redisStore
+	}));
+
+	// static serving
+	server.use(serve(Risotto.APP + 'public'));
+
 
 	//.html is the default extension
 	/*this.server.set("view engine", "html");
@@ -88,7 +159,7 @@ var Http = function( Risotto ){
 	this.server.engine('html', engine);
 
 	//set the views directory
-	this.server.set('views', Yolo.APP + '/views/');
+	server.set('views', Risotto.APP + 'views');
 
 	//setup logger for all request
 	this.server.use(
@@ -104,41 +175,25 @@ var Http = function( Risotto ){
 
 	// expose server
 	this.server = server;
+
+	// expose redisClient as `redis` to Risotto
+	Risotto.redis = redisClient;
 };
+
+/**
+ * Binds the `routes`.
+ * @param {Object} routes
+ * @api public
+ */
 
 Http.prototype.bind = function(routes){
-	var server = this.server;
-
-	for(var path in routes){
-		if(_.isArray(routes[path])){
-			routes[path].forEach(function(_route){
-				var route = _.extend({}, routeDefaults, _route);
-				server[route.via]('/' + path + '.:format?', 
-					validateConstraints(route), 
-					initializers,
-					callRoute(route)
-				);
-			});
-		} else {
-			var route = _.extend({}, routeDefaults, routes[path]);
-			server[route.via]('/' + path + '.:format?',
-				validateConstraints(route), 
-				initializers,
-				callRoute(route)
-			);
-		}
-		
-	}
-
-	this.routeMismatch();
-};
-
-Http.prototype.routeMismatch = function(){
-	this.server.use(function(req, res){
-  		res.send(404);
-	});
-};
-
-module.exports = function(Yolo){
-	return new Http(Yolo);	
+	routes.forEach(function(route){
+		this.server[route.via](
+			namedRouteFor(route),
+			'/' + route.path,
+			rissottoMiddleware(route),
+			hooksMiddleware,
+			callRoute(route)
+		);
+	}, this);
 };

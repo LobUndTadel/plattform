@@ -5,7 +5,7 @@ routes:
         GET login:
             authorized: false
             to: User.showLogin
-        XXX login:
+        POST login:
             authorized: false
             to: User.login
-        POST logout: User.logout
+        GET logout: User.logout

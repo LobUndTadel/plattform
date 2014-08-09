@@ -9,6 +9,10 @@ module.exports = {
 		logger : 'HTTP :remote-addr :method :url :status :res[content-length] ":referrer" ":user-agent" :response-time ms'
 	},
 
+	redis : {
+
+	},
+
 	database : {
 		name : 'lob&tadel',
 	},

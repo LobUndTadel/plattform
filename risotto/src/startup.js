@@ -53,7 +53,13 @@ function initializeController( path ){
 function getAllFiles( rootDir ){
 
 	return (function travel( dir, dirs, traveld ){
-		var files = fs.readdirSync(dir);
+		var files;
+		
+		try{
+			files = fs.readdirSync(dir);
+		} catch(err){
+			return [];
+		} 
 
 	    files.forEach(function(file){
 	        if (file[0] != '.'){
@@ -83,6 +89,7 @@ function getAllFiles( rootDir ){
 
 exports.performChecks = function*( app ){
 	var	checks = {
+			"Application File" : app.APP + 'application.js',
 			"Config File" : app.CONFIG + app.env + '.js',
 			"Model dir" : app.APP + 'models',
 			"Controller dir" : app.APP + 'controllers/',
@@ -136,31 +143,31 @@ exports.loadRoutes = function*( app ){
 				routeTraveler(tree[exp], next);
 
 			} else if(matches) {
-				var method = matches[1],
-					route = matches[2],
-					to = '',
-					prefix = namespace.join('/');
-
-				if( ['get', 'post', 'delete', 'put'].indexOf(method) == -1 ){
-					app.logger.warn("Method '" + method + "' is not available for route:'" + prefix ? prefix + '/' + route : route);
-				}
+				var method = matches[1].toLowerCase(),
+					path = matches[2],
+					prefix = namespace.join('/'),
+					routeOptions =  {
+						via : 'get',
+						authorized : true
+					};
 
 				if(_.isString( tree[exp] )){
-					to = tree[exp];
+					routeOptions = _.extend({}, routeOptions, {
+						to : tree[exp]
+					});
 				} else {
-					to = tree[exp].to;
+					routeOptions = _.extend({}, routeOptions, tree[exp]);
 				}
-				
-				if( isValid(to) ){
-					var routeOptions = _.extend({}, {
-						via: method,
-						to : to,
-						route: prefix ? prefix + '/' + route : route
-					}, tree[exp]);
 
+				routeOptions = _.extend({}, routeOptions, {
+					via: method,
+					path: prefix ? prefix + '/' + path : path
+				});
+
+				if( isValid(routeOptions.to) ){
 					safeRoutes.push(routeOptions);
 				} else {
-					app.logger.warn("Route '"+ prefix ? prefix + '/' + route : route +"' via '" + method + "' is not matching any function with: "  + to);
+					app.logger.warn("Route '"+ routeOptions.path + "' via '" + routeOptions.via + "' is not matching any generatorfunction with: "  + routeOptions.to);
 				}
 			} else {
 				app.logger.warn("Route '" + tree[exp] + "' has invalid format");
@@ -173,12 +180,11 @@ exports.loadRoutes = function*( app ){
 
 		if( fn[0] in app.controllers ){
 			var instance = new app.controllers[ fn[0] ]();
-			return instance[fn[1]] && instance[fn[1]].call 
+			return instance[fn[1]] && instance[fn[1]].constructor.name == 'GeneratorFunction'
 		} 
 		return false;
 	};
 
-	console.log(safeRoutes);
 	return safeRoutes;
 }
 
@@ -189,9 +195,34 @@ exports.loadModules = function*( app ){
 	try{
 		for(var initializer in initializers){
 			var module = require(initializers[initializer].path);
-			yield module.initialize();
+			yield module.initialize(app);
 		}
 	} catch(err){
 		app.exit('Initializer "' + initializers[initializer].name + '" failed with: ' + err);
 	}
-}
+};
+
+
+exports.loadApplication = function(app){
+	var Application = require(app.APP + 'application.js'),
+		instance = new Application();
+
+	if(!(instance instanceof app.Application)){
+		app.exit('Application expected to be instance of Risotto.Application');
+	}
+
+	return instance;
+};
+
+exports.loadHooks = function( app ){
+	var path = app.APP + 'hooks/',
+		hooks = getAllFiles(path);
+
+	try{
+		for(var hook in hooks){
+			require(hooks[hook].path);
+		}
+	} catch(err){
+		app.logger.warn('Hook "' + hooks[hook].name + '" failed with: ' + err);
+	}
+};

@@ -3,7 +3,7 @@ var flags = require('optimist').argv,
 	startup = require('./src/startup'),
 	path = require('path'),
 	redis = require("redis"),
-	methods = require('./src/methods'),
+	hooks = require('./src/hooks'),
 	co = require('co');
 
 
@@ -12,6 +12,11 @@ var flags = require('optimist').argv,
  */
 
 var Risotto = {};
+
+/**
+ * expose the base application
+ */
+Risotto.Application = require('./src/application.js');
 
 
 /**
@@ -53,9 +58,15 @@ Risotto.initialize = co(function*( base ){
 	//set log level
 	this.logger.levels = this.config.logger.levels;
 
+	//load the application file
+	this.application = startup.loadApplication(this);
+
 	yield startup.loadModules(this);
 
 	this.controllers = startup.loadControllers(this);
+
+	//load hooks
+	startup.loadHooks(this);
 
 	//load routes & check them
 	this.routes = yield startup.loadRoutes(this);
@@ -110,6 +121,13 @@ Risotto.exit = function(err){
 	Risotto.logger.error(err);
 	process.exit(1); 
 };
+
+/**
+ * before, after hooks
+ */
+Risotto.after = hooks.after;
+Risotto.before = hooks.before;
+Risotto.callHooks = hooks.call;
 
        
 module.exports = Risotto;

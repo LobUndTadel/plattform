@@ -11,11 +11,9 @@
     "url": "https://github.com/heythere-project/yolo.git"
   },
   "dependencies": {
-    "underscore": "*",
-    "hiredis": "*",
-    "redis": "*",
+    "hiredis": "~0.1.17",
+    "redis": "~0.11.0",
     "optimist": "*",
-    "backbone": "*",
     "backbone-validation": "0.7.1",
     "ejs": "*",
     "consolidate": "*",
@@ -30,7 +28,12 @@
     "thunkify": "~2.1.2",
     "koa": "~0.8.2",
     "koala": "~0.6.1",
-    "koa-router": "~3.2.3"
+    "koa-router": "~3.2.3",
+    "delegates": "0.0.3",
+    "underscore": "~1.6.0",
+    "backbone": "~1.1.2",
+    "koa-generic-session": "~1.2.0",
+    "koa-redis": "~0.1.1"
   },
   "engines": {
     "node": ">=0.8"
