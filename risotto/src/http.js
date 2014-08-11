@@ -1,13 +1,11 @@
 var koala = require('koala');
 var router = require('koa-router');
 var serve = require('koa-static');
-var less = require('koa-less');
 var session = require('koa-generic-session');
 var RedisStore = require('koa-redis');
 var redis = require('redis');
 var _ = require('underscore');
 var Params = require('./params');
-var pathJoin = require('path').join;
 
 
 /**
@@ -16,8 +14,8 @@ var pathJoin = require('path').join;
  * @api public
  */
 
-module.exports = function(Risotto){
-	return new Http(Risotto);	
+module.exports = function(Risotto, routes){
+	return new Http(Risotto, routes);	
 };
 
 /**
@@ -27,8 +25,8 @@ module.exports = function(Risotto){
  * @api private
  */
 
-function rissottoMiddleware(route, Risotto){
-	return function* rissottoMiddlewareClosure(next){
+function risottoMiddleware(route, Risotto){
+	return function* risottoMiddlewareClosure(next){
 		if( route.authorized ){
 			if( !this.session.authorized ){
 				this.response.status = 401;
@@ -122,7 +120,9 @@ function namedRouteFor(route){
  * @api public
  */
 
-function Http(Risotto){
+function Http(Risotto, routes){
+	this.routes = routes;
+console.log(routes)
 	var server = koala();
 
 	// mount the router
@@ -148,13 +148,6 @@ function Http(Risotto){
 		
 	server.use(session({
   		store: redisStore
-	}));
-
-	// less
-	server.use(less(Risotto.APP + 'public', {
-		parser : {
-			paths : [pathJoin(Risotto.APP, '..', 'node_modules')]
-		}
 	}));
 
 	// static serving
@@ -187,20 +180,21 @@ function Http(Risotto){
 
 	// expose redisClient as `redis` to Risotto
 	Risotto.redis = redisClient;
+
+	this.bind();
 };
 
 /**
  * Binds the `routes`.
- * @param {Object} routes
- * @api public
+ * @api private
  */
 
-Http.prototype.bind = function(routes){
-	routes.forEach(function(route){
+Http.prototype.bind = function(){
+	this.routes.forEach(function(route){
 		this.server[route.via](
 			namedRouteFor(route),
 			'/' + route.path,
-			rissottoMiddleware(route),
+			risottoMiddleware(route),
 			hooksMiddleware,
 			callRoute(route)
 		);

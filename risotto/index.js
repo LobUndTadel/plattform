@@ -72,13 +72,7 @@ Risotto.initialize = co(function*( base ){
 	this.routes = yield startup.loadRoutes(this);
 
 	//start http
-	this.httpServer = require('./src/http')(this);
-
-	//bind routes
-	this.httpServer.bind(this.routes);
-
-	//build
-	yield startup.build(this);
+	this.httpServer = require('./src/http')(this, this.routes);
 
 	process.on('uncaughtException', this.onerror.bind(this));
 

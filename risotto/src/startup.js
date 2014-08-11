@@ -237,9 +237,3 @@ exports.loadHooks = function( app ){
 		app.logger.warn('Hook "' + hooks[hook].name + '" failed with: ' + err);
 	}
 };
-
-exports.build = function*(app){
-	var p = escapeshell(app.APP + 'public/assets/js/');
-	yield exec("browserify -e "+p+"index.js -t reactify -o "+p+"bundle.dev.js -d");
-   // "browserify -e app/bootstrap.js -t reactify -t uglifyify -o public/scripts/bundle.min.js"
-};

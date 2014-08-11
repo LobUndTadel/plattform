@@ -28,3 +28,6 @@ node_modules
 .lock-wscript
 
 .DS_Store
+
+#exclude compiled
+app/public/build
