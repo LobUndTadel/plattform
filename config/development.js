@@ -13,14 +13,24 @@ module.exports = {
 
 	},
 
-	database : {
-		name : 'lob&tadel',
-	},
-
 	logger : {
 		levels : {
 			console : 0,
 			file : 3
+		}
+	},
+
+	waterline: {
+		connections: {
+			mysql: {
+			  adapter: 'mysql',
+			  host: 'localhost',
+			  database: 'lobundtadel_plattform_dev',
+			  user: 'root',
+			}
+		},
+		defaults: {
+			migrate: 'alter'
 		}
 	}
 };

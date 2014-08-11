@@ -13,7 +13,9 @@
     "underscore": "~1.6.0",
     "bluebird": "~2.2.1",
     "bootstrap": "~3.2.0",
-    "react": "~0.11.1"
+    "react": "~0.11.1",
+    "waterline": "~0.10.6",
+    "sails-mysql": "~0.10.5"
   },
   "engines": {
     "node": ">=0.8"
