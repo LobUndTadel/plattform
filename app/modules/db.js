@@ -6,7 +6,7 @@ var orm = new Waterline();
 /**
  * Define models to load here.
  */
-var models = ['user'];
+var models = ['user_role', 'image', 'like', 'comment', 'shot', 'project', 'user', 'project_user'];
 
 exports.initialize = function( app ){
 	return function(fn){

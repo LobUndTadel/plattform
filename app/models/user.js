@@ -21,12 +21,52 @@ module.exports = Waterline.Collection.extend({
       required: true
     },
 
-    age: {
-      type: 'integer',
-      min: 18
+    password: {
+      type: 'string',
+      required: true
     },
-    fullName: function() {
-      return this.firstName + ' ' + this.lastName
+
+    signInCount: {
+      type: 'integer',
+      required: false
+    },
+
+    confirmationToken: {
+      type: 'string',
+      required: false
+    },
+
+    confirmedAt: {
+      type: 'date',
+      required: false
+    },
+
+    profilePicture: {
+      model: 'image'
+    },
+
+    projects: {
+      collection: 'project',
+      via: 'owner'
+    },
+
+    likes:{
+      collection: 'like',
+      via: 'user'
+    },
+
+    comments:{
+      collection: 'comment',
+      via: 'user'
+    },
+
+    shots:{
+      collection:'shot',
+      via: 'owner'
+    },
+
+    role:{
+      model: 'user_role'
     }
   }
 });
