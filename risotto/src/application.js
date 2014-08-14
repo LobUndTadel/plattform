@@ -20,7 +20,7 @@ _.extend( BaseApplication.prototype, {
      * Handle authorization errors.
      */
     
-    onAuthorizationError : function*(next){
+    onAuthorizationError : function*(koaContext, next){
 
     },
 
@@ -28,15 +28,15 @@ _.extend( BaseApplication.prototype, {
      * Handle generic errors.
      */
 
-    onError : function*(next){
-
+    onError : function*(koaContext, next, error){
+        throw error;
     },
 
     /**
      * Handle not found errors.
      */
 
-    onNotFoundError : function*(next){
+    onNotFoundError : function*(koaContext, next){
 
     }
 });

@@ -9,7 +9,7 @@ module.exports = Risotto.Application.extend({
 		console.log('app onNotFoundError')
 	},
 	*/
-	onError : function*(koaContext, next){
+	/*onError : function*(koaContext, next){
 		console.log('app error');
-	}
+	}*/
 });
