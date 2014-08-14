@@ -175,6 +175,10 @@ exports.loadRoutes = function*( app ){
 					path: prefix ? prefix + '/' + path : path
 				});
 
+				if(routeOptions.path !== '/'){
+					routeOptions.path = '/' + routeOptions.path
+				}
+
 				if( isValid(routeOptions.to) ){
 					safeRoutes.push(routeOptions);
 				} else {
