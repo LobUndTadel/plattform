@@ -103,7 +103,7 @@ function* errorHandler(next){
   		if(404 == status){
   			yield Risotto.application.onNotFoundError(this, next);
   		} else {
-  			yield Risotto.application.onError(this, next);
+  			yield Risotto.application.onError(this, next, err);
   		}
   	}
 }
