@@ -34,6 +34,8 @@ function risottoMiddleware(route, Risotto){
 				return;
 			}
 		}
+
+		yield next;
 	}
 };
 
@@ -47,6 +49,7 @@ function risottoMiddleware(route, Risotto){
 function* hooksMiddleware(next){
 	var data = yield Risotto.callHooks('before', 'controller', this, next);
 	this.middlewareData = data;
+	console.log('yo')
 	yield next;
 };
 
@@ -191,9 +194,10 @@ console.log(routes)
 
 Http.prototype.bind = function(){
 	this.routes.forEach(function(route){
+		Risotto.logger.info(namedRouteFor(route) + ' ' + route.path + ' -> ' + route.to);
 		this.server[route.via](
 			namedRouteFor(route),
-			'/' + route.path,
+			route.path,
 			risottoMiddleware(route),
 			hooksMiddleware,
 			callRoute(route)
