@@ -5,8 +5,8 @@ module.exports = Waterline.Collection.extend({
   schema: true,
   connection: 'mysql',
   attributes: {
-    name : {
-      type : 'string'
+    name:{
+      type: 'string'
     },
 
     owner:{

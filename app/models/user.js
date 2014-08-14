@@ -4,48 +4,48 @@ module.exports = Waterline.Collection.extend({
   tableName: 'user',
   schema: true,
   connection: 'mysql',
-  attributes: {
-    firstName: {
+  attributes:{
+    firstName:{
       type: 'string',
       required: true
     },
 
-    lastName: {
+    lastName:{
       type: 'string',
       required: true,
       maxLength: 20
     },
 
-    email: {
+    email:{
       type: 'email',
       required: true
     },
 
-    password: {
+    password:{
       type: 'string',
       required: true
     },
 
-    signInCount: {
+    signInCount:{
       type: 'integer',
       required: false
     },
 
-    confirmationToken: {
+    confirmationToken:{
       type: 'string',
       required: false
     },
 
-    confirmedAt: {
+    confirmedAt:{
       type: 'date',
       required: false
     },
 
-    profilePicture: {
+    profilePicture:{
       model: 'image'
     },
 
-    projects: {
+    projects:{
       collection: 'project',
       via: 'owner'
     },

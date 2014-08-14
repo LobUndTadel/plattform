@@ -5,10 +5,11 @@ module.exports = Waterline.Collection.extend({
   schema: true,
   connection: 'mysql',
   attributes: {
-    role: {
+    role:{
       type: 'integer'
     },
-    user: {
+
+    user:{
       model: 'user'
     }
   }

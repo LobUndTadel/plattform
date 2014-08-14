@@ -5,17 +5,17 @@ module.exports = Waterline.Collection.extend({
   schema: true,
   connection: 'mysql',
   attributes: {
-    name: {
+    name:{
       type: 'string',
       required: true
     },
 
-    description: {
+    description:{
       type: 'string',
       required: true,
     },
 
-    tags: {
+    tags:{
       type: 'string',
       required: false
     },
@@ -24,7 +24,7 @@ module.exports = Waterline.Collection.extend({
       model: 'project'
     },
 
-    owner: {
+    owner:{
       model: 'user'
     }
   }

@@ -4,14 +4,15 @@ module.exports = Waterline.Collection.extend({
   tableName: 'comment',
   schema: true,
   connection: 'mysql',
-  attributes: {
-    text : {
-      type : 'string'
+  attributes:{
+    text:{
+      type: 'string'
     },
-    project: {
+
+    project:{
       model: 'project'
     },
-    user: {
+    user:{
       model: 'user'
     }
   }
