@@ -1,11 +1,13 @@
-
 routes:
+ GET /:
+   authorized: false
+   to: Feed.show
 	# user api
-    user:
-        GET login:
-            authorized: false
-            to: User.showLogin
-        POST login:
-            authorized: false
-            to: User.login
-        GET logout: User.logout
+ user:
+   GET login:
+     authorized: false
+     to: User.showLogin
+   POST login:
+    authorized: false
+    to: User.login
+   GET logout: User.logout
