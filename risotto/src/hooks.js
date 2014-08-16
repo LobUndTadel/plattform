@@ -34,7 +34,6 @@ exports.call = function *(when, type, koaContext, next){
 	var data = {};
 
 	yield * forEach(hooks[when][type], function*(fn){
-		console.log(fn);
 		yield fn(koaContext, next);
 	});
 
