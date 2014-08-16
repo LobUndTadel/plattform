@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var less = require('gulp-less');
 var concat = require('gulp-concat');
 var notify = require('gulp-notify');
+var rename = require('gulp-rename');
 var uglify = require('uglifyify');
 var browserify = require('browserify');
 var reactify = require('reactify');
@@ -23,6 +24,7 @@ gulp.task('less', function() {
     .pipe(less({
     	paths: [ pathJoin(__dirname, 'node_modules') ]
     }))
+    .pipe(rename('bundle.css'))
     .pipe(gulp.dest('app/public/build'));
 });
 

@@ -28,6 +28,7 @@
     "reactify": "~0.14.0",
     "vinyl-source-stream": "~0.1.1",
     "gulp-notify": "~1.4.2",
-    "uglifyify": "~2.5.0"
+    "uglifyify": "~2.5.0",
+    "gulp-rename": "~1.2.0"
   }
 }
