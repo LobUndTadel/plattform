@@ -35,7 +35,8 @@
     "koa-generic-session": "~1.2.0",
     "koa-redis": "~0.1.1",
     "co-exec": "~1.1.0",
-    "koa-static": "~1.4.6"
+    "koa-static": "~1.4.6",
+    "koa-ejs": "~1.1.0"
   },
   "engines": {
     "node": ">=0.8"

@@ -48,6 +48,7 @@ _.extend(proto, {
  */
 
 delegate(proto, 'koaContext')
+    .method('render')
     .method('attachment')
     .method('json')
     .method('url')

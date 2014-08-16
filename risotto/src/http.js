@@ -1,11 +1,13 @@
 var koala = require('koala');
 var router = require('koa-router');
+var render = require('koa-ejs');
 var serve = require('koa-static');
 var session = require('koa-generic-session');
 var RedisStore = require('koa-redis');
 var redis = require('redis');
 var _ = require('underscore');
 var Params = require('./params');
+var path = require('path');
 
 
 /**
@@ -49,7 +51,6 @@ function risottoMiddleware(route, Risotto){
 function* hooksMiddleware(next){
 	var data = yield Risotto.callHooks('before', 'controller', this, next);
 	this.middlewareData = data;
-	console.log('yo')
 	yield next;
 };
 
@@ -75,7 +76,7 @@ function callRoute(route){
 		delete this.middlewareData;
 
 		if(Risotto.devMode){
-			Risotto.logger.log(fn[0] + "#" + fn[1] + '(…)' + JSON.stringify(params));
+			Risotto.logger.log('-> ' + fn[0] + "." + fn[1] + ' ' + JSON.stringify(params));
 		}
 
 		//make these in the controller available
@@ -125,7 +126,7 @@ function namedRouteFor(route){
 
 function Http(Risotto, routes){
 	this.routes = routes;
-console.log(routes)
+
 	var server = koala();
 
 	// mount the router
@@ -156,18 +157,16 @@ console.log(routes)
 	// static serving
 	server.use(serve(Risotto.APP + 'public'));
 
-
-	//.html is the default extension
-	/*this.server.set("view engine", "html");
-
-	// render .html files with ejs
-	this.server.engine('html', engine);
-
-	//set the views directory
-	server.set('views', Risotto.APP + 'views');
+	render(server, {
+		root: path.join(Risotto.APP, 'views'),
+		layout: 'layout',
+		viewExt: 'html',
+		cache: false,
+		debug: true
+	});
 
 	//setup logger for all request
-	this.server.use(
+	/*this.server.use(
 		express.logger({
 			format : Yolo.config.http.logger,
 			stream : Yolo.logger
