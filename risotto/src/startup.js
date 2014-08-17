@@ -142,11 +142,11 @@ exports.loadRoutes = function*( app ){
 	var file = yield readFile(app.CONFIG + 'routes.yml', 'utf8'),
 		routes = yaml.safeLoad(file),
 		safeRoutes = [];
-	
+
 	(function routeTraveler( tree, namespace ){
 
 		for( var exp in tree ){
-			var matches = exp.match(/(GET|POST|DELETE|PUT)\W+(.+)/);
+			var matches = exp.match(/(GET|POST|DELETE|PUT) (.+)/);
 
 			if(!matches && _.isObject(tree[exp]) ){
 				var next = namespace.slice(0);
@@ -175,7 +175,7 @@ exports.loadRoutes = function*( app ){
 					path: prefix ? prefix + '/' + path : path
 				});
 
-				if(routeOptions.path !== '/'){
+				if(routeOptions.path.charAt(0) !== '/'){
 					routeOptions.path = '/' + routeOptions.path
 				}
 
