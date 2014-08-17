@@ -10,9 +10,10 @@
       <meta name="description" content="">
       <meta name="viewport" content="width=device-width">
       <link rel="stylesheet" href="/build/bundle.css">
-      <script src="/build/bundle.js" async ></script>
+      <script src="/build/bundle.js" ></script>
   </head>
   <body>
+    <% if((locals.navigation && locals.navigation !== true) || typeof locals.navigation === "undefined"){ %>
     <div class="navbar navbar-default" role="navigation">
       <div class="container">
         <div class="navbar-header">
@@ -23,12 +24,15 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="/">Lob&amp;Tadel</a>
+          <div class="pull-right">
+            <a href="/user/register">Anmelden</a>
+            <a href="/user/login">Log in</a>
+          </div>
         </div>
       </div>
     </div>
+    <% } %>
 
-    <div class="container">
-      <%- body -%>
-    </div>
+    <div class="container"><%- body -%></div>
   </body>
 </html>

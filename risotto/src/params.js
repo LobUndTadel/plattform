@@ -8,4 +8,14 @@ Params.prototype.set = function(obj) {
 	}
 };
 
+Params.prototype.take = function(/** args */){
+	var taken = {};
+
+	[].forEach.call(arguments, function(key){
+		taken[key] = _.clone(this[key]);
+	}, this);
+
+	return taken;
+};
+
 module.exports = Params;

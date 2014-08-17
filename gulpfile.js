@@ -3,6 +3,7 @@ var less = require('gulp-less');
 var concat = require('gulp-concat');
 var notify = require('gulp-notify');
 var rename = require('gulp-rename');
+var rev = require('gulp-rev');
 var uglify = require('uglifyify');
 var browserify = require('browserify');
 var reactify = require('reactify');
@@ -10,26 +11,19 @@ var source = require('vinyl-source-stream');
 var fs = require('fs');
 var pathJoin = require('path').join;
 
-function handleErrors() {
-  var args = Array.prototype.slice.call(arguments);
-  notify.onError({
-    title: "Compile Error",
-    message: "<%= error.message %>"
-  }).apply(this, args);
-  this.emit('end');
-}
-
 gulp.task('less', function() {
   return gulp.src('app/public/assets/css/index.less')
+  //  .pipe(rev())
     .pipe(less({
     	paths: [ pathJoin(__dirname, 'node_modules') ]
     }))
-    .pipe(rename('bundle.css'))
-    .pipe(gulp.dest('app/public/build'));
+    .pipe(gulp.dest('app/public/build'))
+   // .pipe(rev.manifest())
+    .pipe(gulp.dest('app/public/build'))
 });
 
 
-gulp.task('scripts', function() {
+/*gulp.task('scripts', function() {
 	var file = 'app/public/assets/js/index.js';
 	var bundler = browserify();
 
@@ -37,14 +31,28 @@ gulp.task('scripts', function() {
 	bundler.transform(reactify);
 	/*bundler.transform({
   		global: true
-	}, 'uglifyify');*/
+	}, 'uglifyify');
 
 
 	return bundler.bundle()
 		.on('error', handleErrors)
         .pipe(source('bundle.js'))
         .pipe(gulp.dest('app/public/build/'));
+});*/
+
+gulp.task('scripts', function() {
+    var bundler = browserify({
+        entries: ['./app/public/assets/js/index.js'], // Only need initial file, browserify finds the deps
+        transform: [reactify], // We want to convert JSX to normal javascript
+        debug: true, // Gives us sourcemapping
+    });
+   
+    bundler
+    .bundle() // Create the initial bundle when starting the task
+    .pipe(source('bundle.js'))
+    .pipe(gulp.dest('./app/public/build/'));
 });
+
 
 gulp.task('watch', ['less', 'scripts'], function() {
   gulp.watch('app/public/assets/css/*.less', ['less']);

@@ -70,7 +70,11 @@ function callRoute(route){
 
 		//merge all into one params object
 		var params = new Params();
-			params.set( _.extend({}, this.req.params, this.req.query, this.req.body, this.req.files));
+			params.set( _.extend({},
+				this.request.query,
+				yield* this.request.urlencoded(),
+				yield* this.request.json(),
+				this.req.files));
 		
 		_.extend( instance, this.middlewareData);
 		delete this.middlewareData;
@@ -82,7 +86,12 @@ function callRoute(route){
 		//make these in the controller available
 		instance.koaContext = this;
 
-		yield instance[fn[1]](params);		
+		yield instance[fn[1]](params);
+
+		//render default
+		if(!this.type && !this.body){
+			yield instance.render(fn.join('/'));
+		}		
 
 		delete instance;
 	};
@@ -157,13 +166,13 @@ function Http(Risotto, routes){
 	// static serving
 	server.use(serve(Risotto.APP + 'public'));
 
-	render(server, {
+	/*render(server, {
 		root: path.join(Risotto.APP, 'views'),
 		layout: 'layout',
 		viewExt: 'html',
 		cache: false,
 		debug: true
-	});
+	});*/
 
 	//setup logger for all request
 	/*this.server.use(

@@ -1,4 +1,5 @@
 var Waterline = require('waterline');
+var bcrypt = require('bcrypt');
 
 module.exports = Waterline.Collection.extend({
   tableName: 'user',
@@ -16,19 +17,28 @@ module.exports = Waterline.Collection.extend({
       maxLength: 20
     },
 
-    email:{
-      type: 'email',
-      required: true
-    },
-
-    password:{
+    username: {
       type: 'string',
       required: true
     },
 
+    email:{
+      type: 'email',
+      required: true,
+      unique: true
+    },
+
+    password: {
+      type: 'string',
+      minLength: 6,
+      required: true,
+      columnName: 'encrypted_password'
+    },
+
     signInCount:{
       type: 'integer',
-      required: false
+      required: false,
+      defaultsTo: 0
     },
 
     confirmationToken:{
@@ -68,5 +78,14 @@ module.exports = Waterline.Collection.extend({
     role:{
       model: 'user_role'
     }
+  },
+
+    // Lifecycle Callbacks
+  beforeCreate: function(values, next) {
+    bcrypt.hash(values.password, 10, function(err, hash) {
+      if(err) return next(err);
+      values.password = hash;
+      next();
+    });
   }
 });

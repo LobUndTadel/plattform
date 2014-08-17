@@ -15,9 +15,8 @@
     "redis": "~0.11.0",
     "optimist": "*",
     "backbone-validation": "0.7.1",
-    "ejs": "*",
+    "ejs": "0.8.2",
     "consolidate": "*",
-    "ejs-locals": "~1.0.2",
     "express-partials": "*",
     "connect-redis": "~1.4.5",
     "cradle": "~0.6.4",
@@ -36,7 +35,8 @@
     "koa-redis": "~0.1.1",
     "co-exec": "~1.1.0",
     "koa-static": "~1.4.6",
-    "koa-ejs": "~1.1.0"
+    "koa-ejs": "~1.1.0",
+    "co-fs": "~1.2.0"
   },
   "engines": {
     "node": ">=0.8"
