@@ -5,9 +5,10 @@ var thunkify = require('thunkify');
 /**
  * Validates hfu email address.
  */
- function isValidEmail(email){
- 	return /(.+)\.(.+)\@hs\-furtwangen\.de/.test(String(email));
- }
+ 
+function isValidEmail(email){
+	return /(.+)\.(.+)\@hs\-furtwangen\.de/.test(String(email));
+}
 
 
 module.exports = Risotto.Controller.extend({
@@ -56,6 +57,12 @@ module.exports = Risotto.Controller.extend({
 			return yield this.render('user/registerForm', {navigation: false, error: err.details });
 		}
 
-		yield this.render('user/welcome', { user: user});
+		// login & save id
+		this.session = {
+			authorized: true,
+			user_id: user.id
+		}
+
+		this.redirect('/' + user.username + '/welcome');
 	}
 })	

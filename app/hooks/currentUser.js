@@ -8,7 +8,7 @@ Risotto.before('controller', function*(koaContext, route, data, next){
 	}
 	
 	try{
-		var user = yield User.findOne({ id: koaContext.session.data.id });
+		var user = yield User.findOne({ id: koaContext.session.user_id });
 	} catch(err){
 		return;
 	}

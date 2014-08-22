@@ -76,24 +76,6 @@ var proto = BaseController.prototype;
 
 _.extend(proto, {   
     /**
-     * Authorizes current request with session `data`.
-     */
-    
-    authorize : function(data){
-        this.koaContext.session = {
-            authorized : true
-        }
-    },
-
-    /**
-     * Deauthorizes current request.
-     */
-
-    deAuthorize : function(){
-        this.koaContext.session = null;
-    },
-
-    /**
     * generate html with view name and options
     * @param {String} view
     * @param {Object} options
@@ -128,6 +110,7 @@ delegate(proto, 'koaContext')
     .access('status')
     .access('body')
     .access('type')
+    .access('session')
 
 /**
  * Make it extendable.
