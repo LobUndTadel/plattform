@@ -30,11 +30,11 @@ function registerHook(when, type, fn){
  * use this to invoke the hooks
  * @api private
  */
-exports.call = function *(when, type, koaContext, next){
+exports.call = function *(when, type, koaContext, route, next){
 	var data = {};
 
 	yield * forEach(hooks[when][type], function*(fn){
-		yield fn(koaContext, next);
+		yield fn(koaContext, route, data, next);
 	});
 
 	return data;

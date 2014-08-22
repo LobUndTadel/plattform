@@ -20,26 +20,6 @@ module.exports = function(Risotto, routes){
 	return new Http(Risotto, routes);	
 };
 
-/**
- * Middleware to validate route constraints.
- * @param {Route} route
- * @param {RisottoSingleton} risotto
- * @api private
- */
-
-function risottoMiddleware(route, Risotto){
-	return function* risottoMiddlewareClosure(next){
-		if( route.authorized ){
-			if( !this.session.authorized ){
-				this.response.status = 401;
-				yield Risotto.application.onAuthorizationError(this, next);
-				return;
-			}
-		}
-
-		yield next;
-	}
-};
 
 /**
  * Calls the hooks in context and
@@ -48,11 +28,14 @@ function risottoMiddleware(route, Risotto){
  * @api private
  */
 
-function* hooksMiddleware(next){
-	var data = yield Risotto.callHooks('before', 'controller', this, next);
-	this.middlewareData = data;
-	yield next;
+function hooksMiddleware(route){
+	return function* hooksMiddleware(next){
+		var data = yield Risotto.callHooks('before', 'controller', this, route, next);
+		this.middlewareData = data;
+		yield next;
+	};
 };
+
 
 /**
  * Calls the actual controller specified in `route`.
@@ -163,6 +146,8 @@ function Http(Risotto, routes){
   		store: redisStore
 	}));
 
+	server.keys = Risotto.config.http.sessionKeys;
+
 	// static serving
 	server.use(serve(Risotto.APP + 'public'));
 
@@ -206,8 +191,7 @@ Http.prototype.bind = function(){
 		this.server[route.via](
 			namedRouteFor(route),
 			route.path,
-			risottoMiddleware(route),
-			hooksMiddleware,
+			hooksMiddleware(route),
 			callRoute(route)
 		);
 	}, this);
