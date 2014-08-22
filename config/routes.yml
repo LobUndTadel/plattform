@@ -19,3 +19,5 @@ routes:
     to: User.login
 
    POST logout: User.logout
+
+ GET /:username/welcome: Profile.welcome
