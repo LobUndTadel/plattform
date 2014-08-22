@@ -5,6 +5,4 @@ Risotto.before('controller', function*(koaContext, route, data, next){
 			return;
 		}
 	}
-
-	yield next;
 });
