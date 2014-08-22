@@ -18,6 +18,7 @@ gulp.task('less', function() {
     	paths: [ pathJoin(__dirname, 'node_modules') ]
     }))
     .pipe(gulp.dest('app/public/build'))
+    .pipe(rename('bundle.css'))
    // .pipe(rev.manifest())
     .pipe(gulp.dest('app/public/build'))
 });
