@@ -19,8 +19,10 @@ exports.initialize = function( app ){
 		// config
 		app.config.waterline.adapters = { 'mysql': mysql };
 		orm.initialize(app.config.waterline, function(err, models) {
-		  app.models = models.collections;
-  		  fn(err);
+			if(err) fn(err);
+			
+			app.models = models.collections;
+  			fn();
 		});
 	};
 };
