@@ -1,5 +1,7 @@
 var Waterline = require('waterline');
 var bcrypt = require('bcrypt');
+var thunkify = require('thunkify');
+bcrypt.compare = thunkify(bcrypt.compare);
 
 module.exports = Waterline.Collection.extend({
   tableName: 'user',
@@ -81,6 +83,10 @@ module.exports = Waterline.Collection.extend({
 
     fullName: function() {
       return this.firstName + ' ' + this.lastName
+    },
+
+    comparePassword: function*(password){
+      return bcrypt.compare(this.password, password);
     }
   },
 

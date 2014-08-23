@@ -25,8 +25,15 @@
           </button>
           <a class="navbar-brand" href="/">Lob&amp;Tadel</a>
           <div class="pull-right">
-            <a href="/user/register">Anmelden</a>
-            <a href="/user/login">Log in</a>
+            <% if(locals.currentUser){ %>
+               <a href="/shot/create">Hinzufügen</a>
+                <form method="post" action="/user/logout">
+                  <input type="submit" value="Logout">
+                </form>
+            <% } else { %>
+              <a href="/user/register">Registrieren</a>
+              <a href="/user/login">Log in</a>
+            <% } %>
           </div>
         </div>
       </div>

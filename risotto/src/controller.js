@@ -83,6 +83,8 @@ _.extend(proto, {
     */
     render: function*(view, options) {
         options = options || {};
+        options.currentUser = this.currentUser || null;
+
         var html = yield *render.call(this, view, options);
 
         var layout = ("layout" in options && options.layout === false) ? false : (options.layout || renderSettings.layout);
