@@ -8,7 +8,7 @@ var redis = require('redis');
 var _ = require('underscore');
 var Params = require('./params');
 var path = require('path');
-
+var coRedis = require('co-redis');
 
 /**
  * Expose http.
@@ -21,20 +21,28 @@ module.exports = function(Risotto, routes){
 };
 
 
-/**
- * Calls the hooks in context and
- * expose the result via `middlewareData`.
- * @param {Generator} next
- * @api private
- */
 
-function hooksMiddleware(route){
-	return function* hooksMiddleware(next){
-		var data = yield Risotto.callHooks('before', 'controller', this, route, next);
-		this.middlewareData = data;
-		yield next;
-	};
-};
+function getFilters(filters, methodName){
+	var toCall = [];
+
+	if(_.isString(filters)){
+		toCall = [filters]
+	} else if(!_.isArray(filters)){
+		for(var filter in filters){
+			var val = filters[filter];
+
+			if((_.isArray(val) && val.indexOf(methodName) > -1 ) || 
+				val === methodName || 
+				val === '*'){
+				toCall.push(filter)
+			}
+		}
+	} else {
+		toCall = filters;
+	}
+
+	return toCall;
+}
 
 
 /**
@@ -45,40 +53,91 @@ function hooksMiddleware(route){
 
 function callRoute(route){
 	var fn = route.to.split('.');
-	
-	return function* callRouteClosure(next){
-		//lockup controller by name defined into the route and initialize 
-		var controller = Risotto.controllers[fn[0]];
-		var instance = new controller();
 
-		//merge all into one params object
-		var params = new Params();
-			params.set( _.extend({},
-				this.request.query,
-				yield* this.request.urlencoded(),
-				yield* this.request.json(),
-				this.req.files));
-		
-		_.extend( instance, this.middlewareData);
-		delete this.middlewareData;
+	return function* callRoute(next){
+ 		Risotto.logger.info('callRoute');
 
 		if(Risotto.devMode){
-			Risotto.logger.log('-> ' + fn[0] + "." + fn[1] + ' ' + JSON.stringify(params));
+			Risotto.logger.log('-> ' + fn[0] + "." + fn[1] + ' ' + JSON.stringify(this._params));
 		}
 
-		//make these in the controller available
-		instance.koaContext = this;
-
-		yield instance[fn[1]](params);
+		yield this._instance[fn[1]](this._params);
 
 		//render default
 		if(!this.type && !this.body){
-			yield instance.render(fn.join('/'));
+			yield this._instance.render(fn.join('/'));
 		}		
 
 		delete instance;
 	};
 };
+
+
+/**
+ * Middleware
+ * call the before & after filter
+ * @api private
+ */
+ function filter(route){
+ 	var fn = route.to.split('.');
+
+ 	return function* beforeFilters(next){
+ 		var before = getFilters(this._instance.beforeFilter, fn[1]),
+ 			after = getFilters(this._instance.afterFilter, fn[1]);
+
+ 		try{
+	 		Risotto.logger.info('beforeFilter: ' + before);
+ 			yield Risotto.callBefore(before, this._instance);
+ 			yield next;
+ 			Risotto.logger.info('afterFilter: ' + after);
+ 			yield Risotto.callAfter(after, this._instance);
+ 		} catch(err){
+ 			console.log(err);
+ 		}
+ 	}
+ }
+
+
+
+/**
+ * Middleware
+ * initialize a controller instance
+ * @api private
+ */
+ function initController(route){
+ 	var fn = route.to.split('.');
+
+ 	return function*(next){
+ 		Risotto.logger.info('initController');
+		var controller = Risotto.controllers[fn[0]];
+		this._instance = new controller();
+		this._instance.koaContext = this;
+		yield next;
+ 	}
+ }
+
+/**
+ * Middleware
+ * builds up the params object
+ * @api private
+ */
+
+function* buildParams(next){
+	Risotto.logger.info('buildParams');
+	var params = new Params();
+	
+	// merge everything
+	params.set( _.extend({},
+		this.params,
+		this.request.query,
+		yield* this.request.urlencoded(),
+		yield* this.request.json(),
+		this.req.files)
+	);
+
+	this._params = params;
+	yield next;
+}
 
 /**
  * Handler for generic errors.
@@ -92,6 +151,7 @@ function* errorHandler(next){
   		if (404 == this.response.status && !this.response.body) this.throw(404);
 	} catch (err) {
   		var status = err.status || 500;
+  		this.status = status;
 
   		if(404 == status){
   			yield Risotto.application.onNotFoundError(this, next);
@@ -146,7 +206,10 @@ function Http(Risotto, routes){
   		store: redisStore
 	}));
 
-	server.keys = Risotto.config.http.sessionKeys;
+	//server.keys = Risotto.config.http.session.secret;
+	server.keys = _.isArray(Risotto.config.http.session.secret) ? 
+		Risotto.config.http.session.secret : 
+		[Risotto.config.http.session.secret];
 
 	// static serving
 	server.use(serve(Risotto.APP + 'public'));
@@ -175,7 +238,7 @@ function Http(Risotto, routes){
 	this.server = server;
 
 	// expose redisClient as `redis` to Risotto
-	Risotto.redis = redisClient;
+	Risotto.redis = coRedis(redisClient);
 
 	this.bind();
 };
@@ -191,7 +254,9 @@ Http.prototype.bind = function(){
 		this.server[route.via](
 			namedRouteFor(route),
 			route.path,
-			hooksMiddleware(route),
+			buildParams,
+			initController(route),
+			filter(route),
 			callRoute(route)
 		);
 	}, this);

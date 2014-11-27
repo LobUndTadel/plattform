@@ -15,6 +15,11 @@ module.exports = BaseApplication;
 function BaseApplication(){}
 
 _.extend( BaseApplication.prototype, {
+    /**
+     * Default title.
+     */
+
+    title: 'Risotto Application',
     
     /**
      * Handle authorization errors.
@@ -29,7 +34,11 @@ _.extend( BaseApplication.prototype, {
      */
 
     onError : function*(koaContext, next, error){
-        throw error;
+        if(Risotto.devMode){
+            koaContext.response.body = '<pre>' + error.stack + '</pre>';
+        }
+
+        Risotto.logError(error);
     },
 
     /**

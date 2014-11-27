@@ -3,33 +3,64 @@ var flags = require('optimist').argv,
 	startup = require('./src/startup'),
 	path = require('path'),
 	redis = require("redis"),
-	hooks = require('./src/hooks'),
 	co = require('co');
 
+/**
+ * expose Risotto
+ */
+
+module.exports = function(){
+	return new Risotto();
+}();
 
 /*
- * holds the singleton
+ * the Risotto class
  */
 
-var Risotto = {};
+function Risotto(){
+	/**
+	 * expose the base application
+	 */
+
+	this.Application = require('./src/application');
+
+	/**
+	 * expose the base controller
+	 */
+
+	this.Controller = require('./src/controller');
+
+	/**
+	 * expose version
+	 */
+
+	this.version = require('./package.json').version;
+}
 
 /**
- * expose the base application
+ * Risotto.initialize
+ * @params {String} base
+ * @api public
+ *
+ * here we are going to boot the
+ * risotto application.
+ * currently the following is done:
+ * - check the mode
+ * - startup the logging service
+ * - perform as series of checks
+ * - load the environment specific config file
+ * - load application, modules & controller
+ * - load the hooks
+ * - load route file and parse it
+ * - start http server and bind the routes
+ *
+ * This method will globalize Risotto!
  */
-Risotto.Application = require('./src/application.js');
 
+Risotto.prototype.initialize = co(function*( base ){
+	//load the check lib
+	require('./src/check');
 
-/**
- * expose the base controller
- */
-Risotto.Controller = require('./src/controller');
-
-
-/**
- * Risotto initialize
- */
-
-Risotto.initialize = co(function*( base ){ 	
  	this.env = flags.e || 'development';
 	this.devMode = (this.env == "development");
 	
@@ -42,10 +73,7 @@ Risotto.initialize = co(function*( base ){
 	this.routes = {};
 
 	this.logger = new Logger(this);
-
-	this.logger.info('Risotto - Welcome');
-	this.logger.info('Booting ' + this.env );
-	this.logger.info('Version: ' + Risotto.version);
+	this.printStartupInfo();
 
 	//globalize Risotto
 	global.Risotto = this;
@@ -65,8 +93,9 @@ Risotto.initialize = co(function*( base ){
 
 	this.controllers = startup.loadControllers(this);
 
-	//load hooks
-	startup.loadHooks(this);
+	//load filter
+	require('./src/filter');
+	startup.loadFilter(this);
 
 	//load routes & check them
 	this.routes = yield startup.loadRoutes(this);
@@ -74,57 +103,50 @@ Risotto.initialize = co(function*( base ){
 	//start http
 	this.httpServer = require('./src/http')(this, this.routes);
 
+	/**
+	 * Bind things to the process.
+	 */
 	process.on('uncaughtException', this.onerror.bind(this));
+	process.title = this.application.title;
 
 	//ready to go
 	this.logger.info("Ready!");
 });
 
 /**
- * expose version
+ * print startup info
  */
 
-Risotto.version = require('./package.json').version;
+Risotto.prototype.printStartupInfo = function(){
+	this.logger.info('Risotto - Welcome');
+	this.logger.info('Booting ' + this.env );
+	this.logger.info('Version: ' + this.version);
+	this.logger.info('Globalizing Risotto');
+}	
 
-
-/**
- * gettin runnin
- */ 
-
-Risotto.listen = function(){
-
-};
 
 /**
  * error catcher
  */
 
-Risotto.onerror = function(err){
-
+Risotto.prototype.onerror = function(err){
 	// throw in dev mode
 	if(this.env === 'development') throw err;
+	this.logError(err);
+};
 
+Risotto.prototype.logError = function(err) {
 	var msg = err.stack || err.toString();
 
 	this.logger.error(msg.replace(/^/gm, '  '));
-	this.logger.error();
-	this.logger.error();
-};
+	this.logger.error('');
+	this.logger.error('');
+}
 
 /**
  * method to explizit exit
  */
-Risotto.exit = function(err){
+Risotto.prototype.exit = function(err){
 	Risotto.logger.error(err);
 	process.exit(1); 
 };
-
-/**
- * before, after hooks
- */
-Risotto.after = hooks.after;
-Risotto.before = hooks.before;
-Risotto.callHooks = hooks.call;
-
-       
-module.exports = Risotto;

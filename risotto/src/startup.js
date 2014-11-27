@@ -6,37 +6,7 @@ var	fs   = require('fs');
 var	thunkify = require('thunkify');
 var	readFile = thunkify(fs.readFile);
 var exec = require('co-exec');
-
-
-function escapeshell( s ) {
-	return s.replace(/(["\s'$`\\])/g,'\\$1').replace(/&/g,'\\&');
-};
-
-/**
- * thunkified version of fs.exists
- */
-
-function exists(path){
-	return function(fn){
-		fs.exists(path, function(a){fn(!a)});
-	}
-};
-
-/**
- * replaces .js
- */
-
-function formatName(str){
-	return str.charAt(0).toUpperCase() + str.slice(1).replace('.js', '');
-}
-
-/**
- * check if its a dotfile
- */
-
-function isDotfile(str){
-	return str[0] === '.';
-};
+var utils = require('./utils');
 
 /**
  * init controllers
@@ -58,60 +28,22 @@ function initializeController( path ){
 }
 
 /**
- * recursivly get all files 
- */
-
-function getAllFiles( rootDir ){
-
-	return (function travel( dir, dirs, traveld ){
-		var files;
-		
-		try{
-			files = fs.readdirSync(dir);
-		} catch(err){
-			return [];
-		} 
-
-	    files.forEach(function(file){
-	        if (file[0] != '.'){
-	        	var filePath = [dir, file].join('/'),
-	            	stat = fs.statSync(filePath);
-
-	            if( stat.isDirectory() ){
-	            	var copy = traveld.slice();
-
-	            	copy.push(file);
-	            	travel(filePath, dirs, copy);
-	            } else {
-	            	var p = traveld.join('/');
-	            	dirs.push({ path : filePath, name: (p ? p + '/' : '' ) + formatName(file) });
-	            }
-	        }
-	    });
-
-	    return dirs;
-	})(rootDir, [], []);
-}
-
-
-/**
  * are all folders present?
  */
 
 exports.performChecks = function*( app ){
 	var	checks = {
-			"Application File" : app.APP + 'application.js',
-			"Config File" : app.CONFIG + app.env + '.js',
-			"Model dir" : app.APP + 'models',
-			"Controller dir" : app.APP + 'controllers/',
-			"Route File" : app.CONFIG + 'routes.yml'
-		};
+		"Application File" : app.APP + 'application.js',
+		"Config File" : app.CONFIG + app.env + '.js',
+		"Controller dir" : app.APP + 'controllers/',
+		"Route File" : app.CONFIG + 'routes.yml'
+	};
 	
-	for( var check in checks ){
-		try{
-			yield exists(checks[check]);
-		} catch(e){
-			app.exit("No " +check+ " searched for: " +checks[check] );
+	for(var check in checks){
+		var exists = yield utils.exists(checks[check])
+		
+		if(!exists){
+			app.exit("No " + check + " searched for: " + checks[check]);
 		}
 	}
 };
@@ -119,9 +51,9 @@ exports.performChecks = function*( app ){
 /**
  * check the controllers
  */
+
 exports.loadControllers = function(app){
-	var path = app.APP + 'controllers',
-		controllers = getAllFiles(path),
+	var controllers = utils.readdirRecursiveSync(app.APP + 'controllers'),
 		l = {};
 
 	controllers.forEach(function( controller ){
@@ -135,8 +67,6 @@ exports.loadControllers = function(app){
 
 	return l;
 };
-
-
 
 exports.loadRoutes = function*( app ){
 	var file = yield readFile(app.CONFIG + 'routes.yml', 'utf8'),
@@ -182,7 +112,7 @@ exports.loadRoutes = function*( app ){
 				if( isValid(routeOptions.to) ){
 					safeRoutes.push(routeOptions);
 				} else {
-					app.logger.warn("Route '"+ routeOptions.path + "' via '" + routeOptions.via + "' is not matching any generatorfunction with: "  + routeOptions.to);
+					app.logger.warn("Route ["+ routeOptions.via.toUpperCase() + "]" + routeOptions.path + " is not matching any generatorfunction with: "  + routeOptions.to);
 				}
 			} else {
 				app.logger.warn("Route '" + tree[exp] + "' has invalid format");
@@ -193,7 +123,7 @@ exports.loadRoutes = function*( app ){
 	function isValid(fn){
 		fn = fn.split('.');
 
-		if( fn[0] in app.controllers ){
+		if( fn[0] in Risotto.controllers ){
 			var instance = new app.controllers[ fn[0] ]();
 			return instance[fn[1]] && instance[fn[1]].constructor.name == 'GeneratorFunction'
 		} 
@@ -204,19 +134,16 @@ exports.loadRoutes = function*( app ){
 }
 
 exports.loadModules = function*( app ){
-	var path = app.APP + 'modules/',
-		initializers = getAllFiles(path);
-
-	try{
-		for(var initializer in initializers){
+	var initializers = utils.readdirRecursiveSync(app.APP + 'modules/');
+	for(var initializer in initializers){
+		try{
 			var module = require(initializers[initializer].path);
 			yield module.initialize(app);
+		} catch(err){
+			app.exit('Initializer "' + initializers[initializer].name + '" failed with: ' + err);
 		}
-	} catch(err){
-		app.exit('Initializer "' + initializers[initializer].name + '" failed with: ' + err);
-	}
+	} 
 };
-
 
 exports.loadApplication = function(app){
 	var Application = require(app.APP + 'application.js'),
@@ -229,15 +156,13 @@ exports.loadApplication = function(app){
 	return instance;
 };
 
-exports.loadHooks = function( app ){
-	var path = app.APP + 'hooks/',
-		hooks = getAllFiles(path);
-
-	try{
-		for(var hook in hooks){
-			require(hooks[hook].path);
+exports.loadFilter = function( app ){
+	var filters = utils.readdirRecursiveSync(app.APP + 'filters/');
+	for(var filter in filters){
+		try{
+			require(filters[filter].path);
+		} catch(err){
+			app.logger.warn('Filter "' + filters[filter].name + '" failed with: ' + err);
 		}
-	} catch(err){
-		app.logger.warn('Hook "' + hooks[hook].name + '" failed with: ' + err);
 	}
 };

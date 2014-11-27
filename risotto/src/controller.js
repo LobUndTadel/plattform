@@ -32,6 +32,12 @@ var renderCache = {};
 function *render(view, options) {
     view += renderSettings.viewExt;
     var viewPath = path.join(Risotto.APP, 'views', view);
+    
+    //expose Risotto.config
+    options.Risotto = {
+      config: Risotto.config
+    };
+
     // get from cache
     if (renderSettings.cache && renderCache[viewPath]) {
       return renderCache[viewPath](this, options);
@@ -96,7 +102,20 @@ _.extend(proto, {
 
         this.type = 'html';
         this.body = html;
-    }
+    },
+
+
+    /**
+     * array holding the beforeFilter names
+     */
+     
+    beforeFilter: [],
+
+    /**
+     * array holding the afterFilter names
+     */
+     
+    afterFilter: []
 });
 
 /**

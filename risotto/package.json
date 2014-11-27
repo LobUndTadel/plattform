@@ -26,7 +26,7 @@
     "js-yaml": "~3.1.0",
     "thunkify": "~2.1.2",
     "koa": "~0.8.2",
-    "koala": "~0.6.1",
+    "koala": "git+http://github.com/wemakeweb/koala.git",
     "koa-router": "~3.2.3",
     "delegates": "0.0.3",
     "underscore": "~1.6.0",
@@ -36,7 +36,9 @@
     "co-exec": "~1.1.0",
     "koa-static": "~1.4.6",
     "koa-ejs": "~1.1.0",
-    "co-fs": "~1.2.0"
+    "co-fs": "~1.2.0",
+    "co-redis": "~1.1.0",
+    "generator-foreach": "~0.1.0"
   },
   "engines": {
     "node": ">=0.8"
