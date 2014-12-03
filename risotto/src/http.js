@@ -62,6 +62,9 @@ function callRoute(route){
 			Risotto.logger.log('-> ' + fn[0] + "." + fn[1] + ' ' + JSON.stringify(this._params));
 		}
 
+		//make params in the whole controller available
+		this._instance.params = this._params;
+		
 		yield this._instance[fn[1]](this._params);
 
 		//render default
