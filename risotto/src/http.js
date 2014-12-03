@@ -7,8 +7,9 @@ var RedisStore = require('koa-redis');
 var redis = require('redis');
 var _ = require('underscore');
 var Params = require('./params');
-var path = require('path');
+var Path = require('path');
 var coRedis = require('co-redis');
+var os = require('os');
 
 /**
  * Expose http.
@@ -135,6 +136,23 @@ function* buildParams(next){
 		this.req.files)
 	);
 
+	if('multipart' === this.request.is('multipart')){
+		var parts = this.request.parts();
+		var part;
+
+		while (part = yield parts) {
+			if (part.length) {
+				params.set(part[0], part[1]);
+			} else {
+				var path = Path.join(os.tmpDir(), (new Date()).getTime() + "");
+				yield this.save(part, path); 
+				part.path = path;
+				params.setFile(part);
+			}    
+		}
+	}
+
+
 	this._params = params;
 	yield next;
 }
@@ -239,7 +257,7 @@ function Http(Risotto, routes){
 
 	// expose redisClient as `redis` to Risotto
 	Risotto.redis = coRedis(redisClient);
-
+	
 	this.bind();
 };
 

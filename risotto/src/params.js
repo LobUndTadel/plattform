@@ -18,4 +18,11 @@ Params.prototype.take = function(/** args */){
 	return taken;
 };
 
+Params.prototype.setFile = function(file){
+	if(!this.files){
+		this.files = [];
+	}
+	this.files.push(file);
+};
+
 module.exports = Params;

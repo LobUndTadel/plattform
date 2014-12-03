@@ -89,7 +89,7 @@ _.extend(proto, {
     */
     render: function*(view, options) {
         options = options || {};
-        options.currentUser = this.currentUser || null;
+        options.user = this.user || null;
 
         var html = yield *render.call(this, view, options);
 

@@ -147,6 +147,6 @@ Risotto.prototype.logError = function(err) {
  * method to explizit exit
  */
 Risotto.prototype.exit = function(err){
-	Risotto.logger.error(err);
+	this.logger.error(err);
 	process.exit(1); 
 };
