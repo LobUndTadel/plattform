@@ -16,3 +16,4 @@ routes:
  shot:
   GET create: Shot.createForm
   POST create: Shot.create
+  GET :id-(.+): Shot.show

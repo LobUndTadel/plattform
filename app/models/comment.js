@@ -8,9 +8,8 @@ module.exports = Waterline.Collection.extend({
     text:{
       type: 'string'
     },
-
-    project:{
-      model: 'project'
+    shot:{
+      model: 'shot'
     },
     user:{
       model: 'user'

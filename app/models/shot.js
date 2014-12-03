@@ -34,8 +34,18 @@ module.exports = Waterline.Collection.extend({
       model: 'image'
     },
 
+    likes:{
+      collection: 'like',
+      via: 'shot'
+    },
+
+    comments:{
+      collection: 'comment',
+      via: 'shot'
+    },
+
     titleAsUrl: function() {
-      return this.title.replace(' ', '-');
+      return this.title.replace(/\s/g, '-');
     }
   }
 });

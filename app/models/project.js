@@ -18,16 +18,6 @@ module.exports = Waterline.Collection.extend({
       via: 'project'
     },
 
-    likes:{
-      collection: 'like',
-      via: 'project'
-    },
-
-    comments:{
-      collection: 'comment',
-      via: 'project'
-    },
-
     shots:{
       collection: 'shot',
       via: 'project'

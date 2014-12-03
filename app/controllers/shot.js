@@ -83,5 +83,22 @@ module.exports = Risotto.Controller.extend({
 
 	edit: function*(params){
 
+	},
+
+	show: function*(params){
+		if(!params.id){ 
+			return yield this.render('error');
+		}
+
+		var shot = yield Shot.findOne({id: params.id})
+						.populate('owner')
+						.populate('project')
+						.populate('comments')
+						.populate('likes')
+
+		yield this.render('shot/show', {
+			shot: shot,
+			user: this.user
+		})
 	}
 })
