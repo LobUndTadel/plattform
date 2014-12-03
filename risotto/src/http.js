@@ -93,7 +93,7 @@ function callRoute(route){
  			Risotto.logger.info('afterFilter: ' + after);
  			yield Risotto.callAfter(after, this._instance);
  		} catch(err){
- 			console.log(err);
+ 			yield Risotto.application.onError(this, next, err);
  		}
  	}
  }
@@ -166,7 +166,9 @@ function* buildParams(next){
 function* errorHandler(next){
 	try {
   		yield next;
-  		if (404 == this.response.status && !this.response.body) this.throw(404);
+  		if (404 == this.response.status && !this.response.body){
+  			this.throw(404);
+  		}
 	} catch (err) {
   		var status = err.status || 500;
   		this.status = status;
