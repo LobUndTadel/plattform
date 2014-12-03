@@ -1,0 +1,38 @@
+<h1>Shot hinzufügen</h1>
+<h3>Schritt 1</h3>
+<% if(locals.error){ %>
+<div class="row">
+  <div class="alert alert-warning col-md-5">
+  <%= error %>
+  </div>
+</div>
+<% } %>
+<form role="form" method="post" action="/shot/create" enctype="multipart/form-data">
+  <div class="form-group row">
+    <div class="col-md-6">
+      <label for="i-title">Titel</label>
+      <input type="text" class="form-control" id="i-title" placeholder="" required name="title" tabindex="1">
+    </div>
+  </div>
+  <div class="form-group row">
+    <div class="col-md-6">
+      <label for="i-description">Beschreibung</label>
+      <p class="help-block">Du kannst hier <a href="#">Markdown</a> verwenden.</p>
+      <textarea name="description" id="i-description" class="form-control" tabindex="2"></textarea>
+    </div>
+  </div>
+  <div class="form-group row">
+    <div class="col-md-6">
+      <label for="i-file">Bild</label>
+      <p class="help-block">Das Bild sollte eine Größe von 800 x 600px besitzen.</p>
+      <input type="file" id="i-file" required name="image">
+    </div>
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" required name="checkbox"> Hiermit Bestätige ich bla bla.
+    </label>
+  </div>
+  <input type="hidden" name="step" value="1"> 
+  <button type="submit" class="btn btn-default">zum nächsten Schritt</button>
+</form>

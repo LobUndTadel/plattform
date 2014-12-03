@@ -1,0 +1,9 @@
+<a href="shot/<%=shot.id%>-<%=shot.titleAsUrl()%>">
+	<div class="box">
+		<img src="https://d13yacurqjgara.cloudfront.net/users/214033/screenshots/1687568/phone_suite4_teaser.png" />
+		<h5><%= shot.title %></h5>
+		<div class="comment"><%= shot.description %></div>
+		<div class="timestamp"><%= shot.created_at %></div>
+	</div>
+	<div class="artist"><a href="#"><%= shot.owner.fullName() %></a></div>
+</a>

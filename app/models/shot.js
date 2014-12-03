@@ -5,7 +5,7 @@ module.exports = Waterline.Collection.extend({
   schema: true,
   connection: 'mysql',
   attributes: {
-    name:{
+    title:{
       type: 'string',
       required: true
     },
@@ -21,11 +21,21 @@ module.exports = Waterline.Collection.extend({
     },
 
     project:{
-      model: 'project'
+      model: 'project',
+      required: false
     },
 
     owner:{
-      model: 'user'
+      model: 'user',
+      required: true
+    },
+
+    image:{
+      model: 'image'
+    },
+
+    titleAsUrl: function() {
+      return this.title.replace(' ', '-');
     }
   }
 });

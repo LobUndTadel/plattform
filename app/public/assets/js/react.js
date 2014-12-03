@@ -13,10 +13,3 @@ render: function() {
   return <p>{message}</p>;
 }
 });
-var start = new Date().getTime();
-setInterval(function() {
-React.renderComponent(
-  <ExampleApplication elapsed={new Date().getTime() - start} />,
-  document.getElementById('hello')
-);
-}, 50);

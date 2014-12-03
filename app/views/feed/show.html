@@ -1,1 +1,23 @@
-Feed me!
+<div class="feed">
+	<div class="welcome">
+		<h2>Willkommen zu Lob&amp;Tadel</h2>
+
+		<p>Teile hier deine Arbeiten und werde fancy pancy!</p>
+		<div class="button">
+		    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+				<line class="top" x1="0" y1="0" x2="360" y2="0"></line>
+				<line class="left" x1="0" y1="60" x2="0" y2="-120"></line>
+				<line class="bottom" x1="180" y1="60" x2="-360" y2="60"></line>
+				<line class="right" x1="180" y1="0" x2="180" y2="120"></line>
+			</svg>
+		    <span>Los gehts</span>
+		</div>
+	</div>
+
+
+	<ol class="shots">
+		<% shots.forEach(function(shot){ %>
+			<li><%= include ../_partials/shot %></li>
+		<% }) %>
+	</ol>
+</div><!-- /feed -->

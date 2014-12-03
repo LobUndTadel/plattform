@@ -1,6 +1,6 @@
 var User = Risotto.models.user;
 var thunkify = require('thunkify');
-	User.create = thunkify(User.create);
+	//User.create = thunkify(User.create);
 
 /**
  * Validates hfu email address.
@@ -12,6 +12,11 @@ function isValidEmail(email){
 
 
 module.exports = Risotto.Controller.extend({
+	beforeFilter: {
+		'authorize' : 'logout',
+		'user' : 'loginForm'
+	},
+
 	loginForm: function*(){
 		// renders login form
 		if(this.currentUser){
@@ -27,8 +32,8 @@ module.exports = Risotto.Controller.extend({
 		}
 
 		var user = yield User.findOne({'email': params.email});
-		
-		if(!user || false == (yield user.comparePassword(params.password))){
+
+		if(!user || false === (yield user.comparePassword(params.password))){
 			return yield this.render('user/loginForm', {error: 'Email oder Passwort falsch'});
 		}
 
@@ -37,8 +42,8 @@ module.exports = Risotto.Controller.extend({
 			user_id: user.id
 		}
 
-		//user.signInCount = user.signInCount + 1;
-		//yield user.save();
+		user.signInCount = user.signInCount + 1;
+		yield user.save();
 	
 		this.redirect('/');
 	},

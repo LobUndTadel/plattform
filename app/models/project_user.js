@@ -9,6 +9,10 @@ module.exports = Waterline.Collection.extend({
       model: 'project'
     },
 
+    user:{
+      model: 'user'
+    },
+
     accepted:{
       type: 'boolean',
       required: true

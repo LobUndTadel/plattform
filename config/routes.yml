@@ -1,23 +1,18 @@
 routes:
- GET /:
-   authorized: false
-   to: Feed.show
-	# user api
- user:
-   GET register:
-    authorized: false
-    to: User.registerForm
-   POST register:
-    authorized: false
-    to: User.register
+ GET /: Feed.show
 
-   GET login:
-    authorized: false
-    to: User.loginForm
-   POST login:
-    authorized: false
-    to: User.login
+  # user api
+ user:
+   GET register: User.registerForm
+   POST register: User.register
+
+   GET login: User.loginForm
+   POST login: User.login
 
    POST logout: User.logout
 
  GET /:username/welcome: Profile.welcome
+
+ shot:
+  GET create: Shot.createForm
+  POST create: Shot.create

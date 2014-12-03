@@ -1,0 +1,94 @@
+.animate-button(@width:180px, @height: 60px, @color: #2c3e50){
+	width: @width;
+	height: @height;
+	position: relative;
+	background: rgba(255,255,255,1);
+	display: inline-block;
+	margin: 0 10px;
+	cursor: pointer;
+	color: @color;
+	box-shadow: inset 0 0 0 2px #2c3e50;
+    border-radius:3px;
+
+	&:hover {
+		background: rgba(255,255,255,0);
+		-webkit-transition-delay: 0s;
+		transition-delay: 0s;
+	}
+
+	span{
+	    top: 20px;
+	    position: relative;
+	    display: block;
+	    text-align: center;
+	}
+
+	svg {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
+	svg line {
+		stroke-width: 8;
+		stroke: #fff;
+		fill: none;
+	}
+
+	svg line.top,
+	svg line.bottom{
+	    stroke-dasharray: @width; 
+	}
+	svg line.left,
+	svg line.right {
+		stroke-dasharray: @height;
+	}
+
+	svg line.top{
+	    -webkit-transition: all .2s ease-in-out;
+		transition: all .2s ease-in-out;
+	    -webkit-transition-delay: .8s;
+		transition-delay:.8s;
+	}
+
+	svg line.left {
+	    -webkit-transition: all .325s ease-in-out;
+		transition: all .325s ease-in-out;
+	}
+
+	svg line.bottom {
+	    -webkit-transition: all .3s ease-in-out;
+		transition: all .3s ease-in-out;
+	    -webkit-transition-delay: 0.27s;
+		transition-delay: 0.27s;
+
+	}
+
+	svg line.right {
+	    -webkit-transition: all .2s ease-in-out;
+		transition: all .2s ease-in-out;
+		-webkit-transition-delay: 0.6s;
+		transition-delay:0.6s;
+	}
+
+	&:hover svg line.top {
+		-webkit-transform: translateX(-@width);
+		transform: translateX(-@width);
+	}
+
+	&:hover svg line.bottom {
+		-webkit-transform: translateX(@width);
+		transform: translateX(@width);
+	}
+
+	&:hover svg line.left {
+		-webkit-transform: translateY(@height);
+		transform: translateY(@height);
+	}
+
+	&:hover svg line.right {
+		-webkit-transform: translateY(-@height);
+		transform: translateY(-@height);
+	}
+}
+
