@@ -1,14 +1,21 @@
 var Shot = Risotto.models.shot;
 var Tag = Risotto.models.tag;
 var Projects = Risotto.models.projects;
+var Comment = Risotto.models.comment;
+var User = Risotto.models.user;
 var thunkify = require('thunkify');
 //var parse = require('co-busboy')
-var fs = require('fs')
+var fs = require('fs');
+var _ = require('underscore');
 
 Shot.create = thunkify(Shot.create);
+Comment.create = thunkify(Comment.create);
 
 module.exports = Risotto.Controller.extend({
-	beforeFilter: ['authorize', 'user'],
+	beforeFilter: {
+		'authorize': ['createForm', 'create', 'edit', 'comment', 'like'],
+		'user' : '*'
+	},
 
 	createForm: function*(params){
 		// renders the form
@@ -86,19 +93,50 @@ module.exports = Risotto.Controller.extend({
 	},
 
 	show: function*(params){
-		if(!params.id){ 
-			return yield this.render('error');
-		}
-
 		var shot = yield Shot.findOne({id: params.id})
 						.populate('owner')
 						.populate('project')
 						.populate('comments')
 						.populate('likes')
+		
+		var commentUsers = _.pluck(shot.comments, 'user');
+		commentUsers = _.unique(commentUsers);
+
+		commentUsers = yield User.find(commentUsers);
+		var indexedUsers = {}
+
+		commentUsers.forEach(function(user){
+			indexedUsers[user.id] = user
+		})
 
 		yield this.render('shot/show', {
 			shot: shot,
+			user: this.user,
+			url: this.request.url,
+			indexedUsers: indexedUsers
+		})
+	},
+
+	comment: function*(params){
+		if(!params.text || !params.id){
+			return this.redirect(this.shot());
+		}
+
+		var c = yield Comment.create({
+			text: params.text,
+			shot: params.id,
 			user: this.user
 		})
+
+		yield c.save();
+		this.redirect(this.shot() + '#shot-comment-' + c.id);
+	},
+
+	like: function*(params){
+		
+	},
+
+	shot: function(){
+		return this.request.url.replace('/comment', '');
 	}
 })

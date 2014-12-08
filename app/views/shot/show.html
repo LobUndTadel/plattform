@@ -1,4 +1,36 @@
-<h3><%= shot.title %></h3>
-<div class="comment"><%= shot.description %></div>
-<div class="timestamp"><%= shot.created_at %></div>
-<div class="artist"><a href="#"><%= shot.owner.fullName() %></a></div>
+<div class="row shot-detail">
+	<div class="col-md-5">
+		<div class="artist">
+			<a href="/<%= shot.owner.link() %>"><img src="<%= shot.owner.image('small') %>" /></a> 
+		</div>
+		<h3><%= shot.title %></h3>
+		<% if(shot.project){ %>
+			<h5>für <a href="<%= shot.project.url() %>"><%= shot.project.name %></a></h5>
+		<% } %>
+		<div class="box">
+			<img src="https://d13yacurqjgara.cloudfront.net/users/214033/screenshots/1687568/phone_suite4_teaser.png" class="shot-img" />
+		</div>
+		<div class="comment"><%- shot.descriptionAsMarkdown() %></div>
+
+		<div class="lobe">
+			<button class="btn">Lobe es</button>
+			<%= shot.likes.length %> haben es gelobt
+		</div>
+
+		<div class="comments">
+			<h5><%= shot.comments.length %> Kommentare</h5>
+
+			<% include ../_partials/shot-comment-form %>
+			<% shot.comments.forEach(function(comment){ %>
+				<% var commentUser = indexedUsers[comment.user] %>
+				<% include ../_partials/shot-comment %>
+			<% }) %>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="timestamp"><%= shot.created_at %></div>
+		<div class="artist"><a href="#"><%= shot.owner.fullName() %></a></div>
+	</div>
+</div>
+
+

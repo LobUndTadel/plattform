@@ -1,4 +1,5 @@
 var Waterline = require('waterline');
+var marked = require('marked');
 
 module.exports = Waterline.Collection.extend({
   tableName: 'comment',
@@ -6,13 +7,17 @@ module.exports = Waterline.Collection.extend({
   connection: 'mysql',
   attributes:{
     text:{
-      type: 'string'
+      type: 'string',
+      required: true
     },
     shot:{
       model: 'shot'
     },
     user:{
       model: 'user'
+    },
+    textAsMarkdown: function() {
+      return marked(this.text || '');
     }
   }
 });

@@ -17,7 +17,8 @@
     "waterline": "~0.10.6",
     "sails-mysql": "~0.10.5",
     "thunkify": "~2.1.2",
-    "aws-sdk": "~2.0.15"
+    "aws-sdk": "~2.0.15",
+    "marked": "~0.3.2"
   },
   "engines": {
     "node": ">=0.8"

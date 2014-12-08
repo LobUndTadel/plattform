@@ -11,9 +11,16 @@ routes:
 
    POST logout: User.logout
 
- GET /:username/welcome: Profile.welcome
-
  shot:
   GET create: Shot.createForm
   POST create: Shot.create
   GET :id-(.+): Shot.show
+  POST :id-(.+)/comment: Shot.comment
+  POST :id-(.+)/like: Shot.like
+
+ project:
+  GET :id-(.+): Project.show
+
+ # more or less a catch all
+ GET /:username/: Profile.show
+

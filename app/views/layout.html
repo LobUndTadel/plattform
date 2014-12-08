@@ -10,36 +10,67 @@
       <meta name="description" content="">
       <meta name="viewport" content="width=device-width">
       <link rel="stylesheet" href="/build/bundle.css">
-      <script src="/build/bundle.js" ></script>
+      <script src="/build/bundle.js" async></script>
+      <script src="//use.typekit.net/ixx0wia.js"></script>
+      <script>try{Typekit.load();}catch(e){}</script>
   </head>
   <body>
     <% if((locals.navigation && locals.navigation !== true) || typeof locals.navigation === "undefined"){ %>
-    <div class="navbar navbar-default" role="navigation">
+    <nav class="navbar" role="navigation">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/">Lob&amp;Tadel</a>
-          <div class="pull-right">
-            <% if(locals.user){ %>
-               <a href="/shot/create">Hinzufügen</a>
-                <form method="post" action="/user/logout">
-                  <input type="submit" value="Logout">
-                </form>
-            <% } else { %>
+          <a class="navbar-brand" href="/">
+            <% include _partials/logo %>
+          </a>
+        </div>
+        <div class="pull-right sub-nav">
+          <% if(locals.user){ %>
+            <a href="/shot/create" class="btn btn-primary shot-create">Hinzufügen</a>
+            <a href="#" class="btn btn-navigation"><span class="glyphicon glyphicon-align-right" aria-hidden="true"></span></a>
+            <!--<form method="post" action="/user/logout">
+              <input type="submit" value="Logout">
+            </form>-->
+          <% } else { %>
               <a href="/user/register">Registrieren</a>
               <a href="/user/login">Log in</a>
-            <% } %>
+          <% } %>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    <% } %>
+    <div class="container"><%- body -%></div>
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-1">
+            <% include _partials/logo %>
+          </div>
+          <div class="col-md-2">
+            <h5>Zeig uns deine Arbeiten</h5>
+            <p>Lob&amp;Tadel ist eine unabhängige Plattform für Arbeiten der HFU Studenten.</p>
+            <p class="copy">&copy; Copyright 2014 - <%= (new Date()).getFullYear() %> Lob&amp;Tadel</p>
+          </div>
+          <div class="col-md-2">
+            <ul class="list-unstyled">
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Impressum</a></li>
+              <li><a href="#">Kontakt</a></li>
+              <li><a href="https://www.facebook.com/lobundtadel.es">Facebook</a></li>
+            </ul>
+          </div>
+          <div class="col-md-2">
+            <div class="fb-like" data-href="https://www.facebook.com/lobundtadel.es/" data-layout="standard" data-action="like" data-show-faces="true" data-share="false"></div>
           </div>
         </div>
       </div>
-    </div>
-    <% } %>
-
-    <div class="container"><%- body -%></div>
+    </footer>
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/de_DE/sdk.js#xfbml=1&appId=609003865836229&version=v2.0";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
   </body>
 </html>

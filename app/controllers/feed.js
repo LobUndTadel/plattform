@@ -7,6 +7,8 @@ module.exports = Risotto.Controller.extend({
 			.limit(100)
 			.populate('project')
 			.populate('owner')
+			.populate('comments')
+			.populate('likes')
 
 		yield this.render('feed/show', {
 			shots: shots,

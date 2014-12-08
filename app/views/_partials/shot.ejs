@@ -1,9 +1,18 @@
-<a href="shot/<%=shot.id%>-<%=shot.titleAsUrl()%>">
-	<div class="box">
+<div class="artist">
+	<% if(shot.project){ %>
+		<a href="/<%= shot.owner.link() %>"><img src="https://avatars2.githubusercontent.com/u/458714?v=3&s=40" /><%= shot.owner.fullName() %></a> für <a href="<%= shot.project.url() %>"><%= shot.project.name %></a>
+	<% } else { %>
+		<a href="/<%= shot.owner.link() %>"><img src="https://avatars2.githubusercontent.com/u/458714?v=3&s=40" /><%= shot.owner.fullName() %></a>
+	<% } %>
+</div>
+<div class="box">
+	<a href="shot/<%=shot.id%>-<%=shot.titleAsUrl()%>">
 		<img src="https://d13yacurqjgara.cloudfront.net/users/214033/screenshots/1687568/phone_suite4_teaser.png" />
 		<h5><%= shot.title %></h5>
-		<div class="comment"><%= shot.description %></div>
-		<div class="timestamp"><%= shot.created_at %></div>
-	</div>
-	<div class="artist"><a href="#"><%= shot.owner.fullName() %></a></div>
-</a>
+		<div class="clearfix">
+			<div class="timestamp"><%= shot.createdAtFormated() %></div>
+			<div class="likes"><%= shot.likes.length %></div>
+			<div class="comments"><%= shot.comments.length %></div>
+		</div>
+	</a>
+</div>

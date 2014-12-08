@@ -21,6 +21,10 @@ module.exports = Waterline.Collection.extend({
     shots:{
       collection: 'shot',
       via: 'project'
+    },
+
+    url: function() {
+      return '/project/' + this.id + '-' + this.name.replace(/\s/g, '-');
     }
   }
 });

@@ -57,5 +57,6 @@ gulp.task('scripts', function() {
 
 gulp.task('watch', ['less', 'scripts'], function() {
   gulp.watch('app/public/assets/css/*.less', ['less']);
+  gulp.watch('app/public/assets/css/views/*.less', ['less']);
   gulp.watch('app/public/assets/js/*', ['scripts']);
 });

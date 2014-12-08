@@ -1,0 +1,73 @@
+@body-bg: #f3f1f2;
+@text-color: #444;
+@link-color:  #444;
+@link-hover-color: darken(@link-color, 15%);
+
+@lt-button: #1F798B;
+@brand-primary: #428bca;
+@brand-success: #5cb85c;
+@brand-info:    #5bc0de;
+@brand-warning: #f0ad4e;
+@brand-danger:  #d9534f;
+
+@link-hover-color: darken(@link-color, 15%);
+
+@font-family-sans-serif:  "proxima-nova", Helvetica, Arial, sans-serif;
+@font-family-serif:       Georgia, "Times New Roman", Times, serif;
+@font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace;
+@font-family-base:        @font-family-sans-serif;
+@font-size-base:          14px;
+@font-size-base: 13px;
+
+@brandon: "brandon-grotesque";
+@headings-font-weight: 600;
+@border-radius-base: 2px;
+
+@icon-font-path:          "/assets/fonts/";
+
+a, a:hover {
+  text-decoration: none;
+}
+
+.btn{
+	background:none;
+	border:2px solid @lt-button;
+	color: darken(@lt-button, 5%);
+	font-family: @brandon;
+	font-weight: bold;
+	text-transform:uppercase;
+	box-shadow: inset 1px 1px rgba(255, 255, 255, 0.21);
+
+	&:hover{
+		border-color:darken(@lt-button, 15%);
+		background:none;
+		color: darken(@lt-button, 15%);
+	}
+}
+
+.sub-nav{
+	margin-top:28px;
+}
+
+.navbar{
+	background:none;
+}
+
+svg.logo{
+	height: 65px;
+}
+
+.navbar-brand{
+	height:80px;
+}
+
+footer {
+	padding: 40px 0 20px 0;
+	color: #999;
+	background-color: #f9f9f9;
+	border-top: 1px solid #e5e5e5;
+
+	.copy{
+		font-size:10px;
+	}
+}

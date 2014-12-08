@@ -93,6 +93,14 @@ module.exports = Waterline.Collection.extend({
 
     comparePassword: function*(password){
       return yield compare(password, this.password);
+    },
+
+    link: function(){
+      return this.username
+    },
+
+    image: function(size){
+      return "https://avatars2.githubusercontent.com/u/458714?v=3&s=40"
     }
   },
 
