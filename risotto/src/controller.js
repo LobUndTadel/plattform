@@ -132,6 +132,8 @@ delegate(proto, 'koaContext')
     .access('body')
     .access('type')
     .access('session')
+    .access('request')
+    .access('response')
 
 /**
  * Make it extendable.
