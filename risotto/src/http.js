@@ -234,8 +234,6 @@ function Http(Risotto, routes){
 		Risotto.config.http.session.secret : 
 		[Risotto.config.http.session.secret];
 
-	// static serving
-	server.use(serve(Risotto.APP + 'public'));
 
 	/*render(server, {
 		root: path.join(Risotto.APP, 'views'),
@@ -253,10 +251,6 @@ function Http(Risotto, routes){
 		})
 	);*/
 
-	server.listen(Risotto.config.http.port);
-	
-	Risotto.logger.log("HttpServer listening :" + Risotto.config.http.port);
-
 	// expose server
 	this.server = server;
 
@@ -264,6 +258,13 @@ function Http(Risotto, routes){
 	Risotto.redis = coRedis(redisClient);
 	
 	this.bind();
+
+	// static serving
+	server.use(serve(Risotto.APP + 'public'));
+
+	server.listen(Risotto.config.http.port);
+	
+	Risotto.logger.log("HttpServer listening :" + Risotto.config.http.port);
 };
 
 /**
