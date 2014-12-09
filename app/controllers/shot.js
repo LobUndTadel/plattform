@@ -7,6 +7,7 @@ var thunkify = require('thunkify');
 //var parse = require('co-busboy')
 var fs = require('fs');
 var _ = require('underscore');
+var request = require('co-request');
 
 Shot.create = thunkify(Shot.create);
 Comment.create = thunkify(Comment.create);
@@ -30,14 +31,29 @@ module.exports = Risotto.Controller.extend({
 	},
 
 	step1: function*(params){
-		if(!params.files || !params.title || !params.description || !params.checkbox || params.checkbox != 'on'){
+		if(!params.title || !params.description || !params.checkbox || params.checkbox != 'on' || !params.type){
 			return yield this.render('shot/createForm', {error: 'Bitte alle Felder ausfüllen'});
 		}
 
 		var image = params.files[0];
 		var values = params.take('title', 'description');
-		values.owner = this.user.id
+		var videoType = this.getType(params.ref);
 
+		if(!videoType){
+			return yield this.render('shot/createForm', {error: 'Keine valide Youtube oder Vimeo Url'});
+		}
+
+		if('vimeo' === videoType.type){
+			var r = yield request('http://vimeo.com/api/v2/video/' + videoType.ref + '.json');
+			values.ref2 = JSON.parse(r.body)[0].thumbnail_medium
+		}
+
+		values.owner = this.user.id
+		values.type = videoType.type
+		values.ref = videoType.ref
+
+		console.log('TODO: sanitizie');
+		
 		try{
 			var shot = yield Shot.create(values);
 		} catch(err){
@@ -122,6 +138,8 @@ module.exports = Risotto.Controller.extend({
 			return this.redirect(this.shot());
 		}
 
+		console.log('TODO: sanitizie');
+
 		var c = yield Comment.create({
 			text: params.text,
 			shot: params.id,
@@ -136,7 +154,30 @@ module.exports = Risotto.Controller.extend({
 		
 	},
 
+	/** private methods */
 	shot: function(){
 		return this.request.url.replace('/comment', '');
+	},
+
+	getType: function(url){
+		var match = url.match(/.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/);
+
+		if(match){
+			return {
+				type: 'youtube',
+				ref: match[1]
+			}
+		}
+
+		match = url.match(/https?:\/\/(?:www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/);
+
+		if(match){
+			return {
+				type: 'vimeo',
+				ref: match[3]
+			}
+		}
+
+		return false;
 	}
 })

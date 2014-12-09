@@ -36,6 +36,19 @@ module.exports = Waterline.Collection.extend({
       model: 'image'
     },
 
+    type:{
+      type: 'string',
+      required: true
+    },
+
+    ref:{
+      type: 'string'
+    },
+
+    ref2:{
+      type: 'string'
+    },
+
     likes:{
       collection: 'like',
       via: 'shot'

@@ -8,7 +8,7 @@ orm.initialize = thunkify(orm.initialize, orm)
 /**
  * Define models to load here.
  */
-var models = ['tag', 'user_role', 'image', 'like', 'comment', 'shot', 'project', 'user', 'project_user'];
+var models = ['tag', 'user_role', 'image', 'like', 'comment', 'shot', 'project', 'user', 'project_user', 'notification'];
 
 exports.initialize = function*(){
 
