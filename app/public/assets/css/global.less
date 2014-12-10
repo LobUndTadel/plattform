@@ -20,6 +20,8 @@
 @font-size-base: 13px;
 
 @brandon: "brandon-grotesque";
+@raleway: "raleway";
+
 @headings-font-weight: 600;
 @border-radius-base: 2px;
 
@@ -30,13 +32,12 @@ a, a:hover {
 }
 
 .btn{
+	.ui-font();
 	background:none;
 	border:2px solid @lt-button;
 	color: darken(@lt-button, 5%);
-	font-family: @brandon;
-	font-weight: bold;
-	text-transform:uppercase;
 	box-shadow: inset 1px 1px rgba(255, 255, 255, 0.21);
+	padding: 6px 16px;
 
 	&:hover{
 		border-color:darken(@lt-button, 15%);
@@ -46,20 +47,29 @@ a, a:hover {
 }
 
 .sub-nav{
-	margin-top:28px;
+	margin-top:14px;
 }
 
 .navbar{
 	background:none;
+	position: relative;
+	margin-bottom: 18px;
+	border-bottom: 2px solid #DADADA;
+	min-height: 62px;
 }
 
 svg.logo{
-	height: 65px;
+	height: 41px;
+	position: relative;
+	top: 6px;
 }
 
 .navbar-brand{
+	padding:15px 0;
 	height:80px;
 }
+
+
 
 footer {
 	padding: 40px 0 20px 0;

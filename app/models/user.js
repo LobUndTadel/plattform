@@ -87,6 +87,11 @@ module.exports = Waterline.Collection.extend({
       model: 'user_role'
     },
 
+    bio:{
+      type: 'string',
+      required: false
+    },
+
     fullName: function() {
       return this.firstName + ' ' + this.lastName
     },

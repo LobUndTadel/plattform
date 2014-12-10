@@ -1,16 +1,23 @@
 @space: 30px;
 
-.shots {
+/** page specific shot styles */
+.feed .shots{
 	padding:0;
 	width:1050px;
 	.make-row(@space);
+	/*.center-block();*/
 
-	li {
-		list-style: none;
-		margin-bottom: 30px;
+	li{
 		.make-md-column(3, @space);
 		.make-sm-column(3, @space);
 		.make-xs-column(3, @space);
+	}
+}
+
+.shots{
+	li {
+		list-style: none;
+		margin-bottom: 30px;
 		overflow: hidden;
 
 		h5 {
@@ -76,7 +83,7 @@
 			}
 		}
 
-		&:hover .reveal{
+		.box:hover .reveal{
 			.opacity(1);
 			.translate(0, -220px);
 		}

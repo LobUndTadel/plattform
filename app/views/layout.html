@@ -18,15 +18,16 @@
     <% if((locals.navigation && locals.navigation !== true) || typeof locals.navigation === "undefined"){ %>
     <nav class="navbar" role="navigation">
       <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/">
-            <% include _partials/logo %>
-          </a>
+        <div class="feed-sort">
+          <ul class="nav nav-tabs pull-left">
+            <li><% include _partials/logo %></li>
+            <li role="presentation" class="active"><a href="#">Trending</a></li>
+            <li role="presentation"><a href="#">Neuste</a></li>
+          </ul>
         </div>
         <div class="pull-right sub-nav">
           <% if(locals.user){ %>
             <a href="/shot/create" class="btn btn-primary shot-create">Hinzufügen</a>
-            <a href="#" class="btn btn-navigation"><span class="glyphicon glyphicon-align-right" aria-hidden="true"></span></a>
             <a href="#notifications" class="btn btn-primary"><span class="glyphicon glyphicon-fire"></span></a>
             <!--<form method="post" action="/user/logout">
               <input type="submit" value="Logout">
@@ -65,13 +66,13 @@
         </div>
       </div>
     </footer>
-    <div id="fb-root"></div>
+    <% /* <div id="fb-root"></div>
     <script>(function(d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
       js = d.createElement(s); js.id = id;
       js.src = "//connect.facebook.net/de_DE/sdk.js#xfbml=1&appId=609003865836229&version=v2.0";
       fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
+    }(document, 'script', 'facebook-jssdk'));</script> */ %>
   </body>
 </html>

@@ -25,6 +25,14 @@ module.exports = Waterline.Collection.extend({
 
     url: function() {
       return '/project/' + this.id + '-' + this.name.replace(/\s/g, '-');
+    },
+
+    toJSON: function(){
+      return{
+        name: this.name,
+        owner: this.owner,
+        createdAt: this.createdAt
+      }
     }
   }
 });

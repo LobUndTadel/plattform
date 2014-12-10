@@ -43,6 +43,10 @@ module.exports = Risotto.Controller.extend({
 			return yield this.render('shot/createForm', {error: 'Keine valide Youtube oder Vimeo Url'});
 		}
 
+		/**
+		 * request vimeo thumbnail
+		 */
+		 
 		if('vimeo' === videoType.type){
 			var r = yield request('http://vimeo.com/api/v2/video/' + videoType.ref + '.json');
 			values.ref2 = JSON.parse(r.body)[0].thumbnail_medium
