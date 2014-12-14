@@ -3,7 +3,7 @@
 		<img src="<%= profileUser.image() %>" alt"<%= profileUser.fullName() %>" class="img-rounded image">
 		<h3><%= profileUser.fullName() %></h3>
 		<div class="bio"><%= profileUser.bio  || '' %></div>
-		<% if(profileUser.id === user.id){ %>
+		<% if(user && profileUser.id === user.id){ %>
 			<a href="/profile/edit" class="btn btn-primary">Bearbeiten</a>
 		<% } %>
 		<h5>Projekte</h5>

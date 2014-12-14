@@ -1,9 +1,9 @@
-@body-bg: #f3f1f2;
+@body-bg: #F0F0F0;
 @text-color: #444;
 @link-color:  #444;
 @link-hover-color: darken(@link-color, 15%);
 
-@lt-button: #1F798B;
+@lt-button: #EE3C24;
 @brand-primary: #428bca;
 @brand-success: #5cb85c;
 @brand-info:    #5bc0de;
@@ -17,7 +17,6 @@
 @font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace;
 @font-family-base:        @font-family-sans-serif;
 @font-size-base:          14px;
-@font-size-base: 13px;
 
 @brandon: "brandon-grotesque";
 @raleway: "raleway";
@@ -34,15 +33,14 @@ a, a:hover {
 .btn{
 	.ui-font();
 	background:none;
-	border:2px solid @lt-button;
-	color: darken(@lt-button, 5%);
-	box-shadow: inset 1px 1px rgba(255, 255, 255, 0.21);
+	border:1px solid @lt-button;
+	color: @lt-button;
 	padding: 6px 16px;
 
 	&:hover{
-		border-color:darken(@lt-button, 15%);
-		background:none;
-		color: darken(@lt-button, 15%);
+		background:darken(@lt-button, 15%);
+		border:	darken(@lt-button, 15%);
+		color: #fff;
 	}
 }
 
@@ -51,11 +49,12 @@ a, a:hover {
 }
 
 .navbar{
-	background:none;
+	background:#fff;
 	position: relative;
 	margin-bottom: 18px;
-	border-bottom: 2px solid #DADADA;
 	min-height: 62px;
+	border: 0px;
+	border-bottom: 2px solid lightgrey;
 }
 
 svg.logo{

@@ -8,6 +8,7 @@ var thunkify = require('thunkify');
 var fs = require('fs');
 var _ = require('underscore');
 var request = require('co-request');
+var S = require('string');
 
 Shot.create = thunkify(Shot.create);
 Comment.create = thunkify(Comment.create);
@@ -31,32 +32,39 @@ module.exports = Risotto.Controller.extend({
 	},
 
 	step1: function*(params){
+		var values = {};
+
 		if(!params.title || !params.description || !params.checkbox || params.checkbox != 'on' || !params.type){
 			return yield this.render('shot/createForm', {error: 'Bitte alle Felder ausfüllen'});
 		}
 
-		var image = params.files[0];
-		var values = params.take('title', 'description');
-		var videoType = this.getType(params.ref);
+		if('image' !== params.type){
+			var videoType = this.getType(params.ref);
 
-		if(!videoType){
-			return yield this.render('shot/createForm', {error: 'Keine valide Youtube oder Vimeo Url'});
+			if(!videoType){
+				return yield this.render('shot/createForm', {error: 'Keine valide Youtube oder Vimeo Url'});
+			}
+
+			/**
+			 * request vimeo thumbnail
+			 */
+			 
+			if('vimeo' === videoType.type){
+				var r = yield request('http://vimeo.com/api/v2/video/' + videoType.ref + '.json');
+				values.ref2 = JSON.parse(r.body)[0].thumbnail_medium
+			}
+
+			values.type = videoType.type
+			values.ref = videoType.ref
+		} else {
+			var image = params.files[0];
+			values.type = 'image';
+			//impl
 		}
-
-		/**
-		 * request vimeo thumbnail
-		 */
-		 
-		if('vimeo' === videoType.type){
-			var r = yield request('http://vimeo.com/api/v2/video/' + videoType.ref + '.json');
-			values.ref2 = JSON.parse(r.body)[0].thumbnail_medium
-		}
-
-		values.owner = this.user.id
-		values.type = videoType.type
-		values.ref = videoType.ref
-
-		console.log('TODO: sanitizie');
+		
+		values.title = S(params.title).stripTags().s;
+		values.description = S(params.description).stripTags().s;
+		values.owner = this.user.id;
 		
 		try{
 			var shot = yield Shot.create(values);
@@ -118,6 +126,9 @@ module.exports = Risotto.Controller.extend({
 						.populate('project')
 						.populate('comments')
 						.populate('likes')
+		if(!shot){
+			return yield this.render('error');
+		}
 		
 		var commentUsers = _.pluck(shot.comments, 'user');
 		commentUsers = _.unique(commentUsers);

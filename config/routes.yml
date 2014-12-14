@@ -20,6 +20,13 @@ routes:
 
  project:
   GET :id-(.+): Project.show
+  GET :id-(W+)/edit: Project.showEdit
+  POST :id-(.+): Project.edit
+  POST :id-(.+)/member: Project.createMember
+  POST :id-(.+)/member/:memberId/: Project.editMember
+  POST create: Project.create
+
+ #GET /favicon.ico: 
 
  # more or less a catch all
  GET /:username/: Profile.show

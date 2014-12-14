@@ -1,4 +1,9 @@
-<div class="comment" id="shot-comment-<%=comment.id%>">
-	<h6><%= commentUser.fullName() %></h6>
-	<%- comment.textAsMarkdown() %>
+<div class="comment clearfix row" id="shot-comment-<%=comment.id%>">
+	<div class="comment-picture col-md-1 col-xs-2 col-sm-1">
+		<img src="<%= commentUser.image('small') %>" />
+	</div>
+	<div class="comment-body col-md-10 col-xs-10 col-sm-10">
+		<h5><%= commentUser.fullName() %></h5>
+		<%- comment.textAsMarkdown() %>
+	</div>
 </div>

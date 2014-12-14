@@ -14,7 +14,7 @@ module.exports = Waterline.Collection.extend({
     },
 
     member:{
-      collection: 'project_user',
+      collection: 'project_member',
       via: 'project'
     },
 

@@ -1,0 +1,7 @@
+<h3><%= project.name %> bearbeiten</h3>
+<h5>Mitglieder bearbeiten</h5>
+<ul class="list-unstyled">
+<% project.member.forEach(function(member){ %>
+	<li><a href="" ><%= member.fullName() %></a></li>
+<% }); %>
+</ul>

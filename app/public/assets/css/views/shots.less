@@ -3,19 +3,18 @@
 /** page specific shot styles */
 .feed .shots{
 	padding:0;
-	width:1050px;
+	/*width:1050px;*/
 	.make-row(@space);
-	/*.center-block();*/
 
 	li{
 		.make-md-column(3, @space);
 		.make-sm-column(3, @space);
-		.make-xs-column(3, @space);
+		.make-xs-column(12, @space);
 	}
 }
 
 .shots{
-	li {
+	.shot {
 		list-style: none;
 		margin-bottom: 30px;
 		overflow: hidden;
@@ -83,22 +82,22 @@
 			}
 		}
 
-		.box:hover .reveal{
+		/*.box:hover .reveal{
 			.opacity(1);
 			.translate(0, -220px);
-		}
+		}*/
 
 		.box a>img {
 			width:100%;
 		}
 
 		.artist {
-			margin: 12px 0px 8px 0px;
+			margin: 0px 0px 8px 0px;
 			font-size: 13px;
 			color: #868686;
 
 			img{
-				width: 20px;
+				width: 40px !important;
 				border: 1px solid transparent;
 				border-radius: 20px;
 				position: relative;
@@ -108,29 +107,74 @@
 		}
 	}
 
-	li:first-child {
+	shot.li:first-child {
 		margin-left:0;
 	}
 }
 
 .shot-detail{
+	word-break: break-all;
+	font-size: 15px;
+
+	.artist {
+		margin: 0px 0px 8px 0px;
+		font-size: 13px;
+		color: #868686;
+
+		img{
+			width: 20px !important;
+			border: 1px solid transparent;
+			border-radius: 20px;
+			position: relative;
+			top: -2px;
+			margin-right: 4px;
+		}
+	}
+	
 	.box{
 		box-shadow: 0 1px 2px rgba(0,0,0,0.07);
 		padding:20px;
 		background:#fff;
-		overflow: hidden;
 	}
+	
 	.shot-img{
-		width:400px;
-		height:300px;
+		width:100%;
 	}
 
-	.shot-img.big{
-		width:800px;
-		height:600px;
+	.description{
+		margin-top: 20px;
+		margin-bottom: 10px;
+		padding: 0px 10px 8px 10px;
 	}
 
-	.comment{
-		font-size:16px;
+	.lobe {
+		padding: 10px 10px 8px 10px;
+		border-bottom: 1px solid lightgray;
+
+		.glyphicon-chevron-right{
+			margin-left: 10px;
+		}
+	}
+
+	.comments{
+		.comment{
+			border-bottom: 1px solid #E3E3E3;
+			padding: 11px 10px 4px 10px;
+			margin-top: 6px;
+
+			.comment-picture {
+				img{
+					border: 1px solid transparent;
+					border-radius: 20px;
+					position: relative;
+					top: -2px;
+				}
+			}
+		}
+
+		h5{
+			margin-top: 4px;
+			margin-bottom: 2px;
+		}
 	}
 }

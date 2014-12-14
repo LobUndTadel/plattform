@@ -1,41 +1,40 @@
 <div class="row shot-detail">
-	<div class="col-md-5">
-		<div class="artist">
-			<a href="/<%= shot.owner.link() %>"><img src="<%= shot.owner.image('small') %>" /></a> 
-		</div>
+	<div class="col-md-8 col-sd-12 col-xs-12">
 		<h3><%= shot.title %></h3>
-		<% if(shot.project){ %>
-			<h5>für <a href="<%= shot.project.url() %>"><%= shot.project.name %></a></h5>
-		<% } %>
+		<div class="artist">
+			<a href="<%= shot.owner.url() %>">
+				<img src="<%= shot.owner.image('small') %>" /><%= shot.owner.fullName() %>
+			</a>
+			<% if(shot.project){ %>
+				für <a href="<%= shot.project.url() %>"><%= shot.project.name %></a>
+			<% } %> 
+		</div>
 		<div class="box">
 			<% if('youtube' === shot.type){ %>
 				<% include ../_partials/shot-youtube %>
 			<% } else if('vimeo' === shot.type){ %>
 				<% include ../_partials/shot-vimeo %>
 			<% } else { %>
-				<img src="https://d13yacurqjgara.cloudfront.net/users/214033/screenshots/1687568/phone_suite4_teaser.png" class="shot-img" />
+				<img src="https://d13yacurqjgara.cloudfront.net/users/214033/screenshots/1687568/phone_suite4_teaser.png" class="shot-img big" />
 			<% } %>
 		</div>
-		<div class="comment"><%- shot.descriptionAsMarkdown() %></div>
-
-		<div class="lobe">
-			<button class="btn">Lobe es</button>
-			<%= shot.likes.length %> haben es gelobt
+		<div class="description"><%- shot.formatDescription() %></div>
+		<div class="action-box">
+			<div class="lobe row">
+				<div class="col-md-12 col-xs-12 col-sm-12">
+					<button class="btn">Lobe</button> 
+					<span><%= shot.likes.length %> mal gelobt<span aria-hidden="true" class="hidden-lg hidden-md glyphicon glyphicon-chevron-right pull-right" ></span></span>
+				</div>
+			</div>
+			<div class="comments">
+				<% shot.comments.forEach(function(comment){ %>
+					<% var commentUser = indexedUsers[comment.user] %>
+					<% include ../_partials/shot-comment %>
+				<% }) %>
+				<% include ../_partials/shot-comment-form %>
+			</div>
 		</div>
-
-		<div class="comments">
-			<h5><%= shot.comments.length %> Kommentare</h5>
-
-			<% include ../_partials/shot-comment-form %>
-			<% shot.comments.forEach(function(comment){ %>
-				<% var commentUser = indexedUsers[comment.user] %>
-				<% include ../_partials/shot-comment %>
-			<% }) %>
-		</div>
-	</div>
-	<div class="col-md-4">
-		<div class="timestamp"><%= shot.created_at %></div>
-		<div class="artist"><a href="#"><%= shot.owner.fullName() %></a></div>
+	
 	</div>
 </div>
 

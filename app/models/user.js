@@ -64,7 +64,7 @@ module.exports = Waterline.Collection.extend({
     },
 
     projectMember:{
-      collection: 'project_user',
+      collection: 'project_member',
       via: 'user'
     },
 
@@ -88,7 +88,7 @@ module.exports = Waterline.Collection.extend({
     },
 
     bio:{
-      type: 'string',
+      type: 'text',
       required: false
     },
 
@@ -100,8 +100,8 @@ module.exports = Waterline.Collection.extend({
       return yield compare(password, this.password);
     },
 
-    link: function(){
-      return this.username
+    url: function(){
+      return '/' + this.username
     },
 
     image: function(size){

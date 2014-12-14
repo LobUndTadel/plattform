@@ -1,0 +1,20 @@
+<section class="profile row">
+	<div class="profile-header col-md-3">
+		<h3><%= project.name %></h3>
+		<% if(user && project.owner.id === user.id){ %>
+			<a href="<%= project.url() %>/edit" class="btn btn-primary">Bearbeiten</a>
+		<% } %>
+		<h5>Member</h5>
+		<ul class="list-unstyled">
+		<% project.member.forEach(function(member){ %>
+			<li><a href="" ><%= member.fullName() %></a></li>
+		<% }); %>
+		</ul>
+	</div>
+	<ol class="shots col-md-8 col-md-offset-1">
+		<% var inProfile = true %>
+		<% project.shots.forEach(function(shot){ %>
+			<li class="shot"><%= include ../_partials/shot %></li>
+		<% }) %>
+	</ol>
+</section>

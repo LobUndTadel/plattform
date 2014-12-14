@@ -7,7 +7,7 @@ module.exports = Waterline.Collection.extend({
   connection: 'mysql',
   attributes:{
     text:{
-      type: 'string',
+      type: 'text',
       required: true
     },
     shot:{
